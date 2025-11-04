@@ -63,7 +63,7 @@
             box-shadow: 0 2px 10px rgba(30, 64, 175, 0.1); /* เงาจาง ๆ ใต้เมนู */
             position: sticky; /* ลอยติดบนสุดเวลาเลื่อน */
             top: 0;
-            z-index: 1000;
+            z-index: 1200; /* กันเมนูทับ */
         }
 
         /* คอนเทนเนอร์จัดวางภายใน navbar ให้อยู่กึ่งกลาง */
@@ -74,26 +74,20 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 2rem;
+            gap: .75rem;
         }
 
-        /* โลโก้ตัวหนังสือ */
-        /*.logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--navy-blue);
-        }*/
+        /* โลโก้ */
         .logo {
             display: flex;
             align-items: center;
         }
-
         .logo img {
             height: 50px;   /* ปรับขนาดตามต้องการ */
             width: auto;
         }
 
-        /* รายการเมนูแนวนอน */
+        /* รายการเมนูแนวนอน (จอใหญ่) */
         .nav-menu {
             display: flex;
             list-style: none;
@@ -102,22 +96,20 @@
             align-items: center;
         }
 
-        /* --------- ปรับสไตล์เมนูให้เป็นข้อความอ่านง่าย (ไม่ใช่ปุ่ม) --------- */
+        /* ลิงก์เมนู */
         .nav-link {
             position: relative;
             display: inline-block;
-            color: var(--nav-text);   /* สีตัวอักษรเมนู (น้ำเงินเข้ม/หรือเปลี่ยนเป็นดำได้) */
+            color: var(--nav-text);
             text-decoration: none;
             font-weight: 600;
-            padding: 0.4rem 0.2rem;   /* ลด padding ให้เมนูชิดกันมากขึ้น */
-            border-radius: 0;         /* ไม่ทำเป็นแคปซูล */
-            background: transparent;  /* ไม่มีพื้นหลัง */
-            box-shadow: none;         /* ตัดเงาภายใน/ภายนอก */
+            padding: 0.4rem 0.2rem;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
             transition: color .15s ease, border-color .2s ease;
             white-space: nowrap;
         }
-
-        /* เส้นใต้แบบเรียบ ๆ ตอน hover เพื่อบอกว่าชี้ได้ */
         .nav-link:hover,
         .nav-link:focus-visible {
             color: var(--navy-blue);
@@ -131,8 +123,6 @@
             height: 2px;
             background: var(--nav-hover-underline);
         }
-
-        /* สถานะ active: ขีดเส้นใต้หนา ชัดเจน */
         .nav-link.active {
             color: var(--navy-blue);
         }
@@ -143,17 +133,32 @@
             height: 3px;
             background: var(--royal-blue);
         }
-        /* --------- จบการปรับเมนู --------- */
 
-        /* ===================== Main Content (ระบบหน้าแบบ Single Page) ===================== */
-        .main-content {
-            display: none; /* ซ่อนทุกหน้าเริ่มต้น */
+        /* ปุ่ม hamburger (ซ่อนบนจอใหญ่) */
+        .menu-toggle {
+          display: none;
+          width: 42px;
+          height: 42px;
+          background: transparent;
+          border: 2px solid var(--royal-blue);
+          border-radius: 8px;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          cursor: pointer;
         }
-        .main-content.active {
-            display: block; /* แสดงเฉพาะหน้าที่ active */
+        .menu-toggle .bar {
+          display: block;
+          width: 20px;
+          height: 2px;
+          background: var(--royal-blue);
         }
 
-        /* ===================== Hero Section (หน้าแรก) ===================== */
+        /* ===================== Main Content (SPA) ===================== */
+        .main-content { display: none; }
+        .main-content.active { display: block; }
+
+        /* ===================== Hero Section ===================== */
         .hero {
             max-width: 1200px;
             margin: 0 auto;
@@ -164,7 +169,6 @@
             align-items: center;
             min-height: 80%;
         }
-
         .hero-content h1 {
             font-family: 'Playfair Display', serif;
             font-size: 3.5rem;
@@ -172,33 +176,22 @@
             line-height: 1.2;
             margin-bottom: 1rem;
         }
-
-        .hero-content .highlight {
-            color: var(--royal-blue); /* เน้นคำด้วยสีหลัก */
-        }
-
+        .hero-content .highlight { color: var(--royal-blue); }
         .hero-content .thai-title {
             font-size: 1.25rem;
             color: var(--text-light);
             margin-bottom: 1.5rem;
             font-weight: 400;
         }
-
         .hero-content .description {
             font-size: 1.1rem;
             color: var(--text-light);
             margin-bottom: 2.5rem;
             line-height: 1.7;
         }
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
 
-        /* ปุ่มในฮีโร่ */
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        /* ปุ่มหลัก */
+        /* ปุ่ม */
         .btn-primary {
             background: var(--royal-blue);
             color: var(--white);
@@ -217,8 +210,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
         }
-
-        /* ปุ่มรอง */
         .btn-secondary {
             background: transparent;
             color: var(--royal-blue);
@@ -239,72 +230,56 @@
             box-shadow: 0 8px 25px rgba(30, 64, 175, 0.2);
         }
 
-       
         .hero-visual {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         /* รูปภาพแทนใบเกียรติบัตร */
         .certificate-image {
             width: 300px;
             height: 400px;
             border-radius: 12px;
-            object-fit: cover; /* ปรับให้ภาพพอดีโดยไม่บิดเบี้ยว */
+            object-fit: cover;
             box-shadow: 0 20px 40px rgba(30, 64, 175, 0.15);
             transform: rotate(5deg);
             border: 1px solid rgba(30, 64, 175, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
-
-
-/* Floating shapes (decor) */
-.geometric-shapes {
-  position: absolute;
-  top: 0;          /* ✅ สำคัญ */
-  left: 0;         /* ✅ สำคัญ */
-  width: 100%;
-  height: 100%;
-  inset: -60px; 
-  pointer-events: none;
-  z-index: 1;      /* ให้เป็นฉากหลัง */
-}
-.certificate-image { position: relative; z-index: 1; } /* เนื้อหาอยู่เหนือ shape */
-
-.shape { position: absolute; opacity: .15; } /* ขยับความทึบให้เห็นชัดขึ้นนิด */
-.shape-1 { top: 40%; left: 60%; width: 100px; height: 100px;
-  background: linear-gradient(45deg, #1e3a8a, #3b82f6);
-  border-radius: 20px; transform: rotate(45deg);
-  animation: float 6s ease-in-out infinite;
-}
-.shape-2 { top: 60%; right: -5%; width: 80px; height: 80px;
-  background: linear-gradient(135deg, #1e3a8a, #87ceeb);
-  border-radius: 50%;
-  animation: float 9s ease-in-out infinite reverse;
-}
-.shape-3 { bottom: 20%; left: 48%; width: 80px; height: 80px;
-  background: linear-gradient(90deg, #3b82f6, #87ceeb);
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  animation: float 8s ease-in-out infinite;
-}
-@keyframes float {
-  0%,100% { transform: translateY(0) rotate(0); }
-  50%     { transform: translateY(-20px) rotate(10deg); }
-}
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .nav-menu { display: none; }
-        .hero-section { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1rem; text-align: center; }
-        .hero-title { font-size: 2.5rem; }
-        .hero-visual { height: 400px; }
-        .certificate-mockup { width: 280px; height: 400px; }
-        .button-group { justify-content: center; }
-      }
-
-
+        /* Floating shapes (decor) */
+        .geometric-shapes {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          inset: -60px; 
+          pointer-events: none;
+          z-index: 1;      /* ให้เป็นฉากหลัง */
+        }
+        .shape { position: absolute; opacity: .15; }
+        .shape-1 { top: 30%; left: 25%; width: 100px; height: 100px;
+          background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+          border-radius: 20px; transform: rotate(45deg);
+          animation: float 6s ease-in-out infinite;
+        }
+        .shape-2 { top: 50%; right: -15%; width: 80px; height: 80px;
+          background: linear-gradient(135deg, #1e3a8a, #87ceeb);
+          border-radius: 50%;
+          animation: float 9s ease-in-out infinite reverse;
+        }
+        .shape-3 { bottom: 10%; left: 10%; width: 80px; height: 80px;
+          background: linear-gradient(90deg, #3b82f6, #87ceeb);
+          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+          animation: float 8s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%,100% { transform: translateY(0) rotate(0); }
+          50%     { transform: translateY(-20px) rotate(10deg); }
+        }
 
         /* ===================== Content Pages (ทุกหน้าภายใน SPA) ===================== */
         .content-page {
@@ -312,7 +287,6 @@
             margin: 0 auto;
             padding: 3rem 2rem;
         }
-
         .page-title {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
@@ -320,7 +294,6 @@
             margin-bottom: 2rem;
             text-align: center;
         }
-
         .content-section {
             background: var(--white);
             padding: 2rem;
@@ -328,72 +301,101 @@
             box-shadow: 0 4px 20px rgba(30, 64, 175, 0.08);
             margin-bottom: 2rem;
         }
-
         .section-title {
             font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
             color: var(--navy-blue);
             margin-bottom: 1rem;
         }
-
-        /* กริดการ์ดข้อมูล */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
-
         .info-card {
             background: var(--porcelain);
             padding: 1.5rem;
             border-radius: 8px;
-            border-left: 4px solid var(--royal-blue); /* ไลน์สีซ้ายเน้นหัวข้อ */
+            border-left: 4px solid var(--royal-blue);
         }
         .info-card h3 {
             color: var(--navy-blue);
             margin-bottom: 0.5rem;
         }
 
+        /* ===== About: Add-on styles (ไม่แก้ของเดิม) ===== */
+        .about-wrap{max-width:980px;margin:0 auto;color:var(--text-dark);}
+        .page-title{text-align:center;color:var(--royal-blue);font-weight:700;margin-bottom:1.25rem;}
+
+        .features{
+          display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+          gap:1.5rem;max-width:920px;margin:1rem auto 2rem;
+        }
+        .feature{display:flex;flex-direction:column;align-items:center;text-align:center}
+        .feature-icon{
+          width:76px;height:76px;border-radius:999px;display:grid;place-items:center;
+          background: radial-gradient(circle at 35% 35%, #fffb, #fff0 70%), var(--light-blue);
+          border:2px solid rgba(30,64,175,.25); box-shadow:0 8px 20px rgba(30,64,175,.18);
+          margin-bottom:.5rem;
+        }
+        .feature-title{color:var(--royal-blue);font-weight:800;font-size:1.125rem;margin-bottom:.25rem}
+        .feature-desc{font-size:.95rem;color:#334155;line-height:1.5}
+
+        .about-body{max-width:760px;margin:1rem auto 1.5rem}
+        .about-body p{text-align:justify;line-height:1.9;margin:0 0 1rem}
+
+        .cta-links{display:flex;flex-direction:column;gap:.5rem;align-items:center;margin-top:1.25rem}
+        .cta-links a{color:var(--royal-blue);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+        .cta-links a:hover{opacity:.85}
+
+        @media (max-width:900px){
+          .features{grid-template-columns:1fr}
+          .about-body{padding:0 0.25rem}
+        }
+
         /* ===================== Responsive (จอเล็ก) ===================== */
         @media (max-width: 768px) {
-            .nav-menu { display: none; } /* ซ่อนเมนูบนมือถือ (อาจเพิ่ม hamburger ภายหลัง) */
-            .hero {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-                text-align: center;
+            /* แสดงปุ่ม hamburger */
+            .menu-toggle { display: inline-flex; }
+
+            /* เมนูมือถือ: เปิด/ปิดด้วยคลาส .open */
+            .nav-menu {
+              position: fixed;
+              top: 64px;              /* ความสูง navbar โดยประมาณ */
+              left: 0; right: 0;
+              background: var(--white);
+              box-shadow: 0 10px 24px rgba(30,64,175,0.12);
+              display: none;          /* ปิดไว้ก่อน */
+              flex-direction: column; /* เรียงแนวตั้ง */
+              gap: 0;
+              padding: .5rem .75rem;
+              z-index: 1100;
+              border-top: 1px solid rgba(30,64,175,0.08);
             }
-            .hero-content h1 { font-size: 2.5rem; }
-            .certificate-mockup { width: 250px; height: 320px; }
+            .nav-menu.open { display: flex; }
+
+            .nav-link {
+              padding: .9rem .5rem;
+              border-radius: 8px;
+            }
+            .nav-link::after { display: none; } /* ตัดเส้นใต้แบบ hover ออกในมือถือ */
+
+            /* hero เป็นคอลัมน์เดียว + จัดกึ่งกลาง */
+            .hero {
+              grid-template-columns: 1fr;
+              gap: 1.5rem;
+              padding: 2rem 1rem;
+              text-align: center;
+            }
+            .hero-content h1 { font-size: 2.25rem; }
             .hero-buttons { justify-content: center; }
+            .certificate-image { width: 260px; height: 360px; transform: rotate(3deg); }
+            .geometric-shapes { inset: -30px; }
+
+            /* ป้องกัน content ชิดขอบเกินไป */
+            .content-page { padding: 2rem 1rem; }
         }
-        /* ===== About: Add-on styles (ไม่แก้ของเดิม) ===== */
-.about-wrap{max-width:980px;margin:0 auto;color:var(--text-dark);}
-.page-title{text-align:center;color:var(--royal-blue);font-weight:700;margin-bottom:1.25rem;}
-
-.features{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:1.5rem;max-width:920px;margin:1rem auto 2rem;
-}
-.feature{display:flex;flex-direction:column;align-items:center;text-align:center}
-.feature-icon{
-  width:76px;height:76px;border-radius:999px;display:grid;place-items:center;
-  background: radial-gradient(circle at 35% 35%, #fffb, #fff0 70%), var(--light-blue);
-  border:2px solid rgba(30,64,175,.25); box-shadow:0 8px 20px rgba(30,64,175,.18);
-  margin-bottom:.5rem;
-}
-.feature-title{color:var(--royal-blue);font-weight:800;font-size:1.125rem;margin-bottom:.25rem}
-.feature-desc{font-size:.95rem;color:#334155;line-height:1.5}
-
-.about-body{max-width:760px;margin:1rem auto 1.5rem}
-.about-body p{text-align:justify;line-height:1.9;margin:0 0 1rem}
-
-.cta-links{display:flex;flex-direction:column;gap:.5rem;align-items:center;margin-top:1.25rem}
-.cta-links a{color:var(--royal-blue);text-decoration:underline;text-underline-offset:3px;font-weight:700}
-.cta-links a:hover{opacity:.85}
-
-@media (max-width:900px){.features{grid-template-columns:1fr}.about-body{padding:0 0.25rem}}
-
     </style>
 
   <!-- เปิดใช้ view-transition (ถ้าเบราว์เซอร์รองรับ) เพื่อการเปลี่ยนหน้าเนียนขึ้น -->
@@ -412,7 +414,13 @@
     <div class="logo">
         <img src="GG.png" alt="RMUTT Math Competition 2025 Logo">
     </div>
-    <ul class="nav-menu">
+
+    <!-- ปุ่ม hamburger (มือถือ) -->
+    <button id="menuToggle" class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navMenu">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+
+    <ul class="nav-menu" id="navMenu">
      <!-- data-page ชี้ไปยัง <main id="..."> ของแต่ละหน้า -->
      <li><a href="#" class="nav-link active" data-page="home">หน้าแรก</a></li>
      <li><a href="#" class="nav-link" data-page="about">เกี่ยวกับ</a></li>
@@ -447,13 +455,11 @@
     <!-- ฝั่งภาพ (การ์ดใบเกียรติบัตร + รูปทรงตกแต่ง) -->
     <div class="hero-visual">
         <img src="B.png" alt="ใบเกียรติบัตร RMUTT" class="certificate-image">
-    </div>
-      <div class="geometric-shapes">
-       <div class="shape shape-1"></div>
-       <div class="shape shape-2"></div>
-       <div class="shape shape-3"></div>
-      </div>
-     </div>
+        <div class="geometric-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
     </div>
    </section>
   </main>
@@ -471,14 +477,12 @@
     <div class="feature-icon" aria-hidden="true">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
            stroke="var(--royal-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <!-- แว่นขยาย -->
         <circle cx="11" cy="11" r="6"></circle>
         <line x1="16" y1="16" x2="21" y2="21"></line>
       </svg>
     </div>
     <div class="feature-title">ค้นหาและคัดเลือก</div>
-    <div class="feature-desc">เพื่อคัดเลือกนักเรียนมัธยมปลายที่มีศักยภาพด้านการแก้ปัญหาคณิตศาสตร์
-</div>
+    <div class="feature-desc">เพื่อคัดเลือกนักเรียนมัธยมปลายที่มีศักยภาพด้านการแก้ปัญหาคณิตศาสตร์</div>
   </div>
 
   <!-- 2) กระตุ้น (หลอดไฟ + รัศมีประกาย) -->
@@ -486,11 +490,9 @@
     <div class="feature-icon" aria-hidden="true">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
            stroke="var(--royal-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <!-- หลอดไฟ -->
         <path d="M9 18h6"></path>
         <path d="M10 22h4"></path>
         <path d="M12 2a7 7 0 00-4 12c.8.8 1 1.7 1 2.7V18h6v-1.3c0-1 .2-1.9 1-2.7A7 7 0 0012 2z"></path>
-        <!-- รัศมี -->
         <line x1="12" y1="0.8" x2="12" y2="2.2"></line>
         <line x1="4.6" y1="4.6" x2="5.6" y2="5.6"></line>
         <line x1="19.4" y1="4.6" x2="18.4" y2="5.6"></line>
@@ -505,10 +507,8 @@
     <div class="feature-icon" aria-hidden="true">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
            stroke="var(--royal-blue)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <!-- กราฟลูกศรพุ่งขึ้น -->
         <path d="M3 17l6-6 4 4 6-8"></path>
         <path d="M13 7h6v6"></path>
-        <!-- ดาว -->
         <path d="M8.5 3.5l.6 1.7 1.8.1-1.4 1 0.5 1.7-1.5-1-1.5 1 0.5-1.7-1.4-1 1.8-.1z"></path>
       </svg>
     </div>
@@ -517,8 +517,7 @@
   </div>
 </section>
 
-
-    <!-- เนื้อหาย่อหน้าแบบในภาพ -->
+    <!-- เนื้อหาย่อหน้า -->
     <section class="about-body">
       <p>วิชาคณิตศาสตร์ถือเป็นรากฐานสำคัญของการพัฒนาขีดความสามารถในการแข่งขันของประเทศในยุคที่โลกขับเคลื่อนด้วยเทคโนโลยีและนวัตกรรม สอดคล้องกับยุทธศาสตร์ชาติ 20 ปี ด้านการสร้างความสามารถในการแข่งขันและการพัฒนาทรัพยากรมนุษย์ คณิตศาสตร์มิใช่เพียงการคำนวณ แต่เป็นศาสตร์แห่งเหตุผล การคิดวิเคราะห์ และการแก้ปัญหาอย่างเป็นระบบ ซึ่งเป็นทักษะสำคัญในศตวรรษที่ 21</p>
 
@@ -527,10 +526,9 @@
       <p>จึงได้จัดโครงการ “ประชันคมคิดพิชิตโจทย์คณิตศาสตร์ RMUTT Math Competition 2025 (RMC25)” ขึ้น เพื่อเปิดโอกาสให้นักเรียนมัธยมศึกษาตอนปลายทั่วประเทศได้ทดสอบศักยภาพในการคิดวิเคราะห์และแก้ปัญหาอย่างสร้างสรรค์ พร้อมทั้งส่งเสริมวัฒนธรรมการเรียนรู้คณิตศาสตร์เชิงลึก โครงการนี้จะช่วยพัฒนาศักยภาพของนักเรียน สร้างเครือข่ายทางการศึกษา และสนับสนุนการผลิตกำลังคนคุณภาพด้าน STEM เพื่อขับเคลื่อนประเทศต่อไป</p>
 
       <div class="cta-links">
-  <a href="RMC2025.pdf" target="_blank">ดูรายละเอียดของโครงการ</a>
-  <a href="RCM25.pdf" target="_blank">หนังสือเชิญชวนเข้าร่วมสอบแข่งขัน RMC2025</a>
-        </div>
-
+        <a href="RMC2025.pdf" target="_blank">ดูรายละเอียดของโครงการ</a>
+        <a href="RCM25.pdf" target="_blank">หนังสือเชิญชวนเข้าร่วมสอบแข่งขัน RMC2025</a>
+      </div>
     </section>
   </div>
 </main>
@@ -540,7 +538,7 @@
   <div class="content-page max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <h1 class="page-title text-center mb-10" style="color: var(--navy-blue); font-weight: 800;">รางวัลการแข่งขัน</h1>
 
-    <!-- =========================== รางวัลหลัก =========================== -->
+    <!-- รางวัลหลัก -->
     <section class="content-section mb-12">
       <h2 class="section-title text-center mb-6" style="color: var(--navy-blue); font-weight: 700;">รางวัลหลัก</h2>
 
@@ -577,37 +575,29 @@
       </div>
     </section>
 
-    <!-- ======================== รางวัลเกียรติยศ ======================== -->
+    <!-- รางวัลเกียรติยศ -->
     <section class="content-section rounded-2xl" style="background-color: var(--porcelain);">
       <div class="py-10">
         <h2 class="section-title text-center mb-8" style="color: var(--navy-blue); font-size: 1.75rem; font-weight: 700;">
           🏅 รางวัลเกียรติยศ
         </h2>
 
-        <!-- ระดับเหรียญ -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
-          <!-- เหรียญทอง -->
           <article class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
             <div class="text-4xl mb-2" style="color:#eab308;" aria-hidden="true">🥇</div>
             <h4 class="font-semibold text-lg mb-1" style="color: var(--navy-blue);">เกียรติบัตรระดับเหรียญทอง</h4>
             <p class="text-gray-600">ได้คะแนน <span class="font-semibold">80–100</span> คะแนน</p>
           </article>
-
-          <!-- เหรียญเงิน -->
           <article class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
             <div class="text-4xl mb-2 text-gray-400" aria-hidden="true">🥈</div>
             <h4 class="font-semibold text-lg mb-1" style="color: var(--navy-blue);">เกียรติบัตรระดับเหรียญเงิน</h4>
             <p class="text-gray-600">ได้คะแนน <span class="font-semibold">70–79</span> คะแนน</p>
           </article>
-
-          <!-- เหรียญทองแดง -->
           <article class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
             <div class="text-4xl mb-2" style="color:#b45309;" aria-hidden="true">🥉</div>
             <h4 class="font-semibold text-lg mb-1" style="color: var(--navy-blue);">เกียรติบัตรระดับเหรียญทองแดง</h4>
             <p class="text-gray-600">ได้คะแนน <span class="font-semibold">60–69</span> คะแนน</p>
           </article>
-
-          <!-- ชมเชย -->
           <article class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition">
             <div class="text-4xl mb-2 text-indigo-500" aria-hidden="true">🎖️</div>
             <h4 class="font-semibold text-lg mb-1" style="color: var(--navy-blue);">เกียรติบัตรชมเชย</h4>
@@ -615,14 +605,12 @@
           </article>
         </div>
 
-        <!-- หมายเหตุ (มีเส้นขีดน้ำเงินด้านซ้าย ตามแบบเดิม) -->
         <div class="max-w-4xl mx-auto mt-10 px-4">
           <div class="bg-white rounded-xl shadow-sm p-6 leading-relaxed text-gray-700 border-l-4 border-indigo-600">
             <div class="flex items-start gap-3 mb-3">
               <div class="text-indigo-600 text-2xl leading-none" aria-hidden="true">ℹ️</div>
               <h3 class="font-semibold text-indigo-800 mt-0.5">หมายเหตุ</h3>
             </div>
-
             <ol class="list-decimal list-inside space-y-3">
               <li>
                 ในกรณีที่ผู้สอบแข่งขันอันดับใดมีคะแนนเท่ากัน คณะกรรมการสงวนสิทธิ์ในการตัดสินให้เงินรางวัลตามความเหมาะสม ตัวอย่างเช่น
@@ -643,7 +631,6 @@
             </ol>
           </div>
         </div>
-        <!-- /หมายเหตุ -->
       </div>
     </section>
   </div>
@@ -656,7 +643,6 @@
   <div class="content-page">
     <h1 class="page-title">สมัครสอบ</h1>
 
-    <!-- 1. การสมัครเข้าร่วมแข่งขัน -->
     <div class="content-section">
       <h2 class="section-title">การสมัครเข้าร่วมแข่งขัน</h2>
       <p>
@@ -666,7 +652,6 @@
       </p>
     </div>
 
-    <!-- 2. ค่าสมัครสอบ -->
     <div class="content-section">
       <h2 class="section-title">1. ค่าสมัครสอบ</h2>
       <p><strong>ค่าสมัครสอบ:</strong> คนละ 200 บาท</p>
@@ -678,12 +663,9 @@
       <p style="margin-top: .5rem;">โปรดเก็บสลิปไว้เพื่อแนบในขั้นตอนการสมัคร</p>
     </div>
 
-    <!-- 3. แบบฟอร์มหนังสือรับรอง -->
     <div class="content-section">
       <h2 class="section-title">2. แบบฟอร์มหนังสือรับรองสถานภาพการเป็นนักเรียน</h2>
-      <p>
-        นักเรียนสามารถดาวน์โหลดแบบฟอร์มหนังสือรับรองสถานภาพการเป็นนักเรียนได้ที่ลิงก์:
-      </p>
+      <p>นักเรียนสามารถดาวน์โหลดแบบฟอร์มหนังสือรับรองสถานภาพการเป็นนักเรียนได้ที่ลิงก์:</p>
       <p>
         <a href="https://shorturl.at/O5cY5" target="_blank" rel="noopener"
            style="text-decoration: underline; text-underline-offset: 3px; color: var(--royal-blue); font-weight: 700;">
@@ -692,12 +674,9 @@
       </p>
     </div>
 
-    <!-- 4. สมัครสอบพร้อมแนบหลักฐาน -->
     <div class="content-section">
       <h2 class="section-title">3. สมัครสอบพร้อมแนบหลักฐาน</h2>
-      <p>
-        สมัครสอบพร้อมแนบหลักฐานการชำระเงินและหนังสือรับรองสถานภาพการเป็นนักเรียน ผ่านทาง:
-      </p>
+      <p>สมัครสอบพร้อมแนบหลักฐานการชำระเงินและหนังสือรับรองสถานภาพการเป็นนักเรียน ผ่านทาง:</p>
       <ul style="margin-left: 1.5rem; line-height: 1.9;">
         <li>
           📄 <strong>Google Form:</strong> 
@@ -722,7 +701,6 @@
       </div>
     </div>
 
-    <!-- 5. เอกสารที่ต้องใช้ -->
     <div class="content-section">
       <h2 class="section-title">เอกสารที่ต้องใช้ในการสมัคร</h2>
       <ul style="margin-left: 1.5rem; line-height: 2;">
@@ -731,7 +709,6 @@
       </ul>
     </div>
 
-    <!-- 6. ข้อตกลงการสมัครสอบ -->
     <div class="content-section">
       <h2 class="section-title">ข้อตกลงการสมัครสอบ</h2>
       <ol style="margin-left: 1.5rem; line-height: 2;">
@@ -749,14 +726,11 @@
         </li>
       </ol>
     </div>
-
   </div>
 </main>
 
-
-
-
-  <!-- ===================== Exam Page ===================== --><main id="exam" class="main-content">
+  <!-- ===================== Exam Page ===================== -->
+<main id="exam" class="main-content">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gray-50">
     <div class="text-center mb-12">
       <h2 class="text-3xl font-bold text-gray-900 mb-4">ข้อสอบ</h2>
@@ -764,7 +738,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- กล่องรูปแบบข้อสอบ -->
       <div class="bg-white p-8 rounded-lg shadow-md">
         <h3 class="text-2xl font-semibold text-indigo-700 mb-6">รูปแบบข้อสอบ</h3>
         <ul class="space-y-4 text-gray-700">
@@ -787,7 +760,6 @@
         </ul>
       </div>
 
-      <!-- กล่องเนื้อหาที่สอบ -->
       <div class="bg-white p-8 rounded-lg shadow-md">
         <h3 class="text-2xl font-semibold text-indigo-700 mb-6">เนื้อหาที่ใช้ในการสอบ</h3>
         <table class="w-full text-gray-700 border border-gray-200 rounded-lg overflow-hidden">
@@ -814,7 +786,6 @@
       </div>
     </div>
 
-    <!-- แนวทางการเตรียมตัว -->
     <div class="mt-12 bg-indigo-50 p-8 rounded-lg">
       <h3 class="text-2xl font-semibold text-indigo-700 mb-6 text-center">
         แนวทางการเตรียมตัวสอบ
@@ -843,7 +814,6 @@
   </div>
 </main>
 
-
   <!-- ===================== Schedule Page ===================== -->
  <main id="schedule" class="main-content">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -854,11 +824,9 @@
       </p>
     </div>
 
-    <!-- การ์ดตารางเวลา -->
     <div class="bg-white shadow-lg rounded-lg overflow-hidden">
       <div class="p-6">
         <div class="space-y-6">
-          <!-- วันแรกของการเปิดรับสมัคร -->
           <div class="flex items-center p-4 bg-blue-50 rounded-lg">
             <div class="flex-shrink-0 w-24 text-center">
               <div class="text-2xl font-bold text-indigo-600">5</div>
@@ -870,7 +838,6 @@
             </div>
           </div>
 
-          <!-- วันสุดท้ายของการรับสมัคร -->
           <div class="flex items-center p-4 bg-blue-50 rounded-lg">
             <div class="flex-shrink-0 w-24 text-center">
               <div class="text-2xl font-bold text-indigo-600">23</div>
@@ -882,7 +849,6 @@
             </div>
           </div>
 
-          <!-- ประกาศรายชื่อและห้องสอบ -->
           <div class="flex items-center p-4 bg-yellow-50 rounded-lg">
             <div class="flex-shrink-0 w-24 text-center">
               <div class="text-2xl font-bold text-yellow-600">25</div>
@@ -894,7 +860,6 @@
             </div>
           </div>
 
-          <!-- วันสอบ + ตารางเวลาในวันสอบ -->
           <div class="flex items-start p-4 bg-green-50 rounded-lg">
             <div class="flex-shrink-0 w-24 text-center">
               <div class="text-2xl font-bold text-green-600">27</div>
@@ -926,12 +891,10 @@
    <div class="content-page">
     <h1 class="page-title">ที่นั่งสอบ</h1>
 
-    <!-- ===================== ตรวจสอบที่นั่งสอบ ===================== -->
     <div class="content-section">
      <h2 class="section-title">ตรวจสอบที่นั่งสอบ</h2>
      <p>ระบบจะเปิดให้ตรวจสอบที่นั่งสอบในวันที่ <strong>25 พฤศจิกายน 2568</strong></p>
 
-     <!-- อินพุตค้นหาที่นั่ง -->
      <div style="margin-top: 2rem;">
        <label for="student-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">รหัสนักศึกษา:</label>
        <input type="text" id="student-id" placeholder="กรอกรหัสนักศึกษา"
@@ -940,7 +903,6 @@
      </div>
     </div>
 
-    <!-- ===================== ข้อปฏิบัติในวันสอบ ===================== -->
     <div class="content-section" style="margin-top: 3rem;">
       <h2 class="section-title">ข้อปฏิบัติในวันสอบ</h2>
       <ol style="margin-left: 2rem; line-height: 1.8; font-size: 1rem; color: var(--text-dark);">
@@ -958,9 +920,6 @@
    </div>
   </main>
 
-
-
-
   <!-- ===================== Results Page ===================== -->
   <main id="results" class="main-content">
    <div class="content-page">
@@ -969,7 +928,6 @@
      <h2 class="section-title">ตรวจสอบผลการสอบ</h2>
      <p>ระบบจะประกาศผลการสอบในวันที่ 25 พฤศจิกายน 2568</p>
 
-     <!-- อินพุตค้นหาผลสอบ (ตัวอย่าง UI ยังไม่ผูก API) -->
      <div style="margin-top: 2rem;">
        <label for="result-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">รหัสนักศึกษา:</label>
        <input type="text" id="result-id" placeholder="กรอกรหัสนักศึกษา"
@@ -989,7 +947,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- ข้อมูลการติดต่อ -->
       <div class="bg-white p-8 rounded-lg shadow-md">
         <h3 class="text-2xl font-semibold text-indigo-700 mb-6">ข้อมูลการติดต่อ</h3>
         <div class="space-y-4">
@@ -1032,65 +989,33 @@
         </div>
       </div>
 
-      <!-- ฟอร์มติดต่อ -->
       <div class="bg-white p-8 rounded-lg shadow-md">
         <h3 class="text-2xl font-semibold text-indigo-700 mb-6">ส่งข้อความ</h3>
         <form id="contact-form" onsubmit="handleContact(event)">
           <div class="space-y-4">
             <div>
               <label for="contact-name" class="block text-sm font-medium text-gray-700 mb-2">ชื่อ-นามสกุล</label>
-              <input
-                type="text"
-                id="contact-name"
-                name="name"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <input type="text" id="contact-name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div>
               <label for="contact-email" class="block text-sm font-medium text-gray-700 mb-2">อีเมล</label>
-              <input
-                type="email"
-                id="contact-email"
-                name="email"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <input type="email" id="contact-email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div>
               <label for="contact-subject" class="block text-sm font-medium text-gray-700 mb-2">หัวข้อ</label>
-              <input
-                type="text"
-                id="contact-subject"
-                name="subject"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <input type="text" id="contact-subject" name="subject" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
             </div>
             <div>
               <label for="contact-message" class="block text-sm font-medium text-gray-700 mb-2">ข้อความ</label>
-              <textarea
-                id="contact-message"
-                name="message"
-                rows="4"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              ></textarea>
+              <textarea id="contact-message" name="message" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
-            <button
-              type="submit"
-              class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
-            >
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300">
               ส่งข้อความ
             </button>
           </div>
         </form>
 
-        <!-- ข้อความสำเร็จหลังส่งฟอร์ม -->
-        <div
-          id="contact-success"
-          class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg"
-        >
+        <div id="contact-success" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
           <p class="font-semibold">ส่งข้อความสำเร็จ!</p>
           <p>เราจะติดต่อกลับภายใน 24 ชั่วโมง</p>
         </div>
@@ -1100,34 +1025,35 @@
 </main>
 
 <!-- ============================== FOOTER ========================= -->
-    <footer class="bg-[#3B6CA8] text-white py-12">      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <h3 class="text-lg font-semibold mb-4">RMUTT Math Competition 2025</h3>
-            <p class="text-blue-200">โครงการประชันคมคิดพิชิตโจทย์คณิตศาสตร์</p>
-          </div>
-          <div>
-            <h3 class="text-lg font-semibold mb-4">ลิงก์ที่เป็นประโยชน์</h3>
-            <ul class="space-y-2 text-blue-200">
-              <li><a href="#" class="hover:text-white transition duration-300">เว็บไซต์ RMUTT</a></li>
-              <li><a href="https://sci.rmutt.ac.th" class="hover:text-white transition duration-300">คณะวิทยาศาสตร์</a></li>
-              <li><a href="https://www.facebook.com/rmutt.AppliedMath" class="hover:text-white transition duration-300">ข่าวสารและกิจกรรม</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="text-lg font-semibold mb-4">ติดตามเรา</h3>
-            <div class="flex space-x-4">
-              <a href="#" class="text-blue-200 hover:text-white transition duration-300">📘 Facebook</a>
-              <a href="https://www.facebook.com/rmutt.AppliedMath" class="text-blue-200 hover:text-white transition duration-300">📷 Instagram</a>
-              <a href="#" class="text-blue-200 hover:text-white transition duration-300">🐦 Twitter</a>
-            </div>
-          </div>
-        </div>
-        <div class="border-t border-indigo-700 mt-8 pt-8 text-center text-blue-200">
-          <p>© 2025 มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี สงวนลิขสิทธิ์</p>
+<footer class="bg-[#3B6CA8] text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="text-lg font-semibold mb-4">RMUTT Math Competition 2025</h3>
+        <p class="text-blue-200">โครงการประชันคมคิดพิชิตโจทย์คณิตศาสตร์</p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">ลิงก์ที่เป็นประโยชน์</h3>
+        <ul class="space-y-2 text-blue-200">
+          <li><a href="#" class="hover:text-white transition duration-300">เว็บไซต์ RMUTT</a></li>
+          <li><a href="https://sci.rmutt.ac.th" class="hover:text-white transition duration-300">คณะวิทยาศาสตร์</a></li>
+          <li><a href="https://www.facebook.com/rmutt.AppliedMath" class="hover:text-white transition duration-300">ข่าวสารและกิจกรรม</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">ติดตามเรา</h3>
+        <div class="flex space-x-4">
+          <a href="#" class="text-blue-200 hover:text-white transition duration-300">📘 Facebook</a>
+          <a href="https://www.facebook.com/rmutt.AppliedMath" class="text-blue-200 hover:text-white transition duration-300">📷 Instagram</a>
+          <a href="#" class="text-blue-200 hover:text-white transition duration-300">🐦 Twitter</a>
         </div>
       </div>
-    </footer>
+    </div>
+    <div class="border-t border-indigo-700 mt-8 pt-8 text-center text-blue-200">
+      <p>© 2025 มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี สงวนลิขสิทธิ์</p>
+    </div>
+  </div>
+</footer>
 
   <!-- ===================== JavaScript ===================== -->
   <script>
@@ -1147,9 +1073,7 @@
             font_size: 16
         };
 
-        /* ฟังก์ชันควบคุมการนำทางแบบ Single Page:
-           - คลิกเมนูแล้วสลับ class .active ที่เมนูและหน้าปลายทาง
-           - ปุ่มที่มี data-page (แต่ไม่ใช่ลิงก์เมนู) ก็สลับหน้าได้เหมือนกัน */
+        /* ฟังก์ชันควบคุมการนำทางแบบ Single Page */
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.main-content');
@@ -1177,26 +1101,21 @@
                     button.addEventListener('click', function(e) {
                         e.preventDefault();
                         
-                        // ล้าง active จากทุกลิงก์และทุกหน้า
                         navLinks.forEach(l => l.classList.remove('active'));
                         pages.forEach(p => p.classList.remove('active'));
                         
-                        // หาลิงก์เมนูที่ตรงหน้าเป้าหมาย แล้วทำ active
                         const targetPage = this.getAttribute('data-page');
                         const targetNavLink = document.querySelector(`.nav-link[data-page="${targetPage}"]`);
                         if (targetNavLink) targetNavLink.classList.add('active');
                         
-                        // แสดงหน้าปลายทาง
                         document.getElementById(targetPage).classList.add('active');
                     });
                 }
             });
         });
 
-        /* onConfigChange: ถูกเรียกเมื่อค่าคอนฟิกเปลี่ยน (จาก Element SDK)
-           - อัปเดตข้อความ ปุ่ม และธีมสี/ฟอนต์ ด้วยค่าใหม่แบบไดนามิก */
+        /* onConfigChange: ถูกเรียกเมื่อค่าคอนฟิกเปลี่ยน (จาก Element SDK) */
         async function onConfigChange(config) {
-            // อัปเดตหัวข้อใหญ่ของ hero (ใช้ innerHTML เพราะมี <br> และ span.highlight)
             const heroTitle = document.querySelector('.hero-content h1');
             if (heroTitle) {
                 heroTitle.innerHTML = `
@@ -1205,21 +1124,18 @@
                 `;
             }
 
-            // อัปเดตข้อความย่อย
             const thaiTitle = document.querySelector('.thai-title');
             if (thaiTitle) thaiTitle.textContent = config.thai_title || defaultConfig.thai_title;
 
             const description = document.querySelector('.description');
             if (description) description.textContent = config.hero_description || defaultConfig.hero_description;
 
-            // อัปเดตปุ่ม
             const registerBtn = document.querySelector('.btn-primary');
             if (registerBtn) registerBtn.textContent = config.register_button || defaultConfig.register_button;
 
             const loginBtn = document.querySelector('.btn-secondary');
             if (loginBtn) loginBtn.textContent = config.login_button || defaultConfig.login_button;
 
-            // สีธีม (อัปเดตตัวแปร CSS ที่ :root)
             const primaryColor = config.primary_color || defaultConfig.primary_color;
             const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
             const textColor = config.text_color || defaultConfig.text_color;
@@ -1232,13 +1148,11 @@
             document.documentElement.style.setProperty('--porcelain', backgroundColor);
             document.documentElement.style.setProperty('--navy-blue', accentColor);
 
-            // ฟอนต์และขนาดฐาน
             const customFont = config.font_family || defaultConfig.font_family;
             const baseSize = config.font_size || defaultConfig.font_size;
             document.body.style.fontFamily = `${customFont}, Arial, sans-serif`;
             document.body.style.fontSize = `${baseSize}px`;
 
-            // สเกลหัวข้อ/หัวเรื่องต่าง ๆ ตาม baseSize
             const heroH1 = document.querySelector('.hero-content h1');
             if (heroH1) heroH1.style.fontSize = `${baseSize * 2.2}px`;
 
@@ -1249,66 +1163,32 @@
             sectionTitles.forEach(title => title.style.fontSize = `${baseSize * 1.2}px`);
         }
 
-        /* mapToCapabilities: ระบุสิ่งที่แก้ไขได้จากแผงควบคุมของ Element SDK
-           เช่น สี ฟอนต์ ขนาดฟอนต์ ฯลฯ */
         function mapToCapabilities(config) {
             return {
                 recolorables: [
-                    {
-                        get: () => config.primary_color || defaultConfig.primary_color,
-                        set: (value) => {
-                            config.primary_color = value;
-                            window.elementSdk.setConfig({ primary_color: value });
-                        }
-                    },
-                    {
-                        get: () => config.secondary_color || defaultConfig.secondary_color,
-                        set: (value) => {
-                            config.secondary_color = value;
-                            window.elementSdk.setConfig({ secondary_color: value });
-                        }
-                    },
-                    {
-                        get: () => config.text_color || defaultConfig.text_color,
-                        set: (value) => {
-                            config.text_color = value;
-                            window.elementSdk.setConfig({ text_color: value });
-                        }
-                    },
-                    {
-                        get: () => config.background_color || defaultConfig.background_color,
-                        set: (value) => {
-                            config.background_color = value;
-                            window.elementSdk.setConfig({ background_color: value });
-                        }
-                    },
-                    {
-                        get: () => config.accent_color || defaultConfig.accent_color,
-                        set: (value) => {
-                            config.accent_color = value;
-                            window.elementSdk.setConfig({ accent_color: value });
-                        }
-                    }
+                    { get: () => config.primary_color || defaultConfig.primary_color,
+                      set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+                    { get: () => config.secondary_color || defaultConfig.secondary_color,
+                      set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } },
+                    { get: () => config.text_color || defaultConfig.text_color,
+                      set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+                    { get: () => config.background_color || defaultConfig.background_color,
+                      set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+                    { get: () => config.accent_color || defaultConfig.accent_color,
+                      set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
                 ],
-                borderables: [], /* เผื่ออนาคตถ้าต้องการปรับเส้นขอบ */
+                borderables: [],
                 fontEditable: {
                     get: () => config.font_family || defaultConfig.font_family,
-                    set: (value) => {
-                        config.font_family = value;
-                        window.elementSdk.setConfig({ font_family: value });
-                    }
+                    set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
                 },
                 fontSizeable: {
                     get: () => config.font_size || defaultConfig.font_size,
-                    set: (value) => {
-                        config.font_size = value;
-                        window.elementSdk.setConfig({ font_size: value });
-                    }
+                    set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
                 }
             };
         }
 
-        /* mapToEditPanelValues: จัดค่าเริ่มต้นให้ฟิลด์ในแผงแก้ไข (Element SDK) */
         function mapToEditPanelValues(config) {
             return new Map([
                 ["competition_title", config.competition_title || defaultConfig.competition_title],
@@ -1319,7 +1199,6 @@
             ]);
         }
 
-        /* เริ่มต้น Element SDK ถ้ามีในหน้า */
         if (window.elementSdk) {
             window.elementSdk.init({
                 defaultConfig,
@@ -1327,6 +1206,39 @@
                 mapToCapabilities,
                 mapToEditPanelValues
             });
+        }
+
+        // ==== Mobile menu toggle (เปิด/ปิด) + ปิดเองเมื่อแตะเมนู ====
+        document.addEventListener('DOMContentLoaded', function () {
+          const menuToggle = document.getElementById('menuToggle');
+          const navMenu = document.getElementById('navMenu');
+          const navLinks = document.querySelectorAll('.nav-link');
+
+          if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+              const willOpen = !navMenu.classList.contains('open');
+              navMenu.classList.toggle('open', willOpen);
+              menuToggle.setAttribute('aria-expanded', String(willOpen));
+              document.body.style.overflow = willOpen ? 'hidden' : '';
+            });
+          }
+
+          navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+              if (navMenu.classList.contains('open')) {
+                navMenu.classList.remove('open');
+                if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+              }
+            });
+          });
+        });
+
+        // (ออปชัน) handler ฟอร์มติดต่อแบบ mock
+        function handleContact(e){
+          e.preventDefault();
+          const box = document.getElementById('contact-success');
+          if (box) { box.classList.remove('hidden'); }
         }
     </script>
 
