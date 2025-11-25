@@ -397,6 +397,240 @@
             .content-page { padding: 2rem 1rem; }
         }
     </style>
+<style>
+  /* กล่องผลลัพธ์หลัก */
+  #result-box {
+    max-width: 560px;
+    margin: 1.75rem auto 0;
+    display: none; /* เริ่มต้นซ่อนไว้ก่อน */
+  }
+
+  /* ให้มี motion เบา ๆ เวลาโชว์ */
+  #result-box.show {
+    display: block;
+  }
+
+  #result-box.show .result-card,
+  #result-box.show .result-error {
+    animation: card-enter 0.55s ease-out;
+  }
+
+  .result-card {
+    position: relative;
+    background: radial-gradient(circle at top left, #e0f2fe 0, #eef2ff 40%, #e0ecff 100%);
+    border-radius: 1.25rem;
+    padding: 1.6rem 1.8rem;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.20);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #0f172a;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform-origin: center;
+  }
+
+  /* แท่งไฮไลต์ด้านบน */
+  .result-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(59,130,246,0.12), rgba(56,189,248,0.16));
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .result-card::after {
+    content: "";
+    position: absolute;
+    top: 0.8rem;
+    left: 1.6rem;
+    width: 70px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1d4ed8, #38bdf8);
+    box-shadow: 0 0 12px rgba(59,130,246,0.7);
+  }
+
+  .result-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    z-index: 1;
+  }
+
+  .result-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0b1120;
+    text-transform: uppercase;
+  }
+
+  .seat-badge {
+    position: relative;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #1d4ed8, #3b82f6, #0ea5e9);
+    background-size: 200% 200%;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4);
+    white-space: nowrap;
+    animation: badge-shimmer 4s ease-in-out infinite;
+  }
+
+  .seat-badge span {
+    opacity: 0.85;
+    font-weight: 500;
+    margin-right: 0.35rem;
+  }
+
+  .cid-text {
+    position: relative;
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-bottom: 0.4rem;
+    z-index: 1;
+  }
+
+  .name-text {
+    position: relative;
+    font-size: 1.08rem;
+    font-weight: 650;
+    color: #020617;
+    margin-bottom: 0.9rem;
+    z-index: 1;
+  }
+
+  .meta-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+    gap: 0.55rem 1.4rem;
+    font-size: 0.92rem;
+    z-index: 1;
+  }
+
+  .meta-item-label {
+    font-weight: 800;  /* ทำให้ “ระดับชั้น” และ label อื่น ๆ หนาชัด */
+    color: #111827;
+  }
+
+  .meta-item-value {
+    color: #020617;
+  }
+
+  .meta-tag-row {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    z-index: 1;
+  }
+
+  .meta-tag {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    color: #111827;
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+  }
+
+  .meta-tag:hover {
+    transform: translateY(-1px);
+    background: rgba(59,130,246,0.07);
+    box-shadow: 0 6px 12px rgba(15,23,42,0.15);
+  }
+
+  /* hover ทั้งการ์ด (ถ้าอยากได้) */
+  .result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.26);
+  }
+
+  /* สถานะ error */
+  .result-error {
+    background: #fef2f2;
+    border-radius: 1.1rem;
+    padding: 1.4rem 1.6rem;
+    border: 1px solid #fecaca;
+    color: #7f1d1d;
+    box-shadow: 0 10px 24px rgba(185, 28, 28, 0.15);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .result-error-title {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    font-size: 1rem;
+  }
+
+  .result-error-sub {
+    font-size: 0.9rem;
+    color: #991b1b;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .result-card {
+      padding: 1.3rem 1.3rem 1.4rem;
+      border-radius: 1.1rem;
+    }
+
+    .result-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .meta-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .seat-badge {
+      align-self: flex-start;
+    }
+  }
+
+  /* Animations */
+  @keyframes card-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(0) scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes badge-shimmer {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+</style>
+
+
+
 
   <!-- เปิดใช้ view-transition (ถ้าเบราว์เซอร์รองรับ) เพื่อการเปลี่ยนหน้าเนียนขึ้น -->
   <style>@view-transition { navigation: auto; }</style>
@@ -454,7 +688,7 @@
 
     <!-- ฝั่งภาพ (การ์ดใบเกียรติบัตร + รูปทรงตกแต่ง) -->
     <div class="hero-visual">
-        <img src="PP.png" alt="ใบเกียรติบัตร RMUTT" class="certificate-image">
+        <img src="B.png" alt="ใบเกียรติบัตร RMUTT" class="certificate-image">
         <div class="geometric-shapes">
           <div class="shape shape-1"></div>
           <div class="shape shape-2"></div>
@@ -527,7 +761,7 @@
 
       <div class="cta-links">
         <a href="RMC2025.pdf" target="_blank">ดูรายละเอียดของโครงการ</a>
-        <a href="RCM25-use.pdf" target="_blank">หนังสือเชิญชวนเข้าร่วมสอบแข่งขัน RMC2025</a>
+        <a href="RCM25.pdf" target="_blank">หนังสือเชิญชวนเข้าร่วมสอบแข่งขัน RMC2025</a>
       </div>
     </section>
   </div>
@@ -887,25 +1121,37 @@
 </main>
 
   <!-- ===================== Seats Page ===================== -->
-  <main id="seats" class="main-content">
-   <div class="content-page">
+<main id="seats" class="main-content">
+  <div class="content-page">
     <h1 class="page-title">ที่นั่งสอบ</h1>
 
     <div class="content-section">
-     <h2 class="section-title">ตรวจสอบที่นั่งสอบ</h2>
-     <p>ระบบจะเปิดให้ตรวจสอบที่นั่งสอบในวันที่ <strong>25 พฤศจิกายน 2568</strong></p>
+      <h2 class="section-title">ตรวจสอบที่นั่งสอบ</h2>
 
-     <div style="margin-top: 2rem;">
-       <label for="student-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">รหัสนักศึกษา:</label>
-       <input type="text" id="student-id" placeholder="กรอกรหัสนักศึกษา"
-              style="width: 100%; max-width: 300px; padding: 0.75rem; border: 2px solid var(--light-blue); border-radius: 6px; font-size: 1rem;">
-       <button class="btn-primary" style="margin-left: 1rem; margin-top: 1rem;">ตรวจสอบ</button>
-     </div>
+      <div style="margin-top: 2rem;">
+        <label for="cid" style="display:block; margin-bottom:0.5rem; font-weight:600;">
+          เลขบัตรประจำตัวประชาชน:
+        </label>
+
+        <input type="text" id="cid" placeholder="กรอกเลขบัตรประชาชน"
+               style="width:100%; max-width:300px; padding:0.75rem; 
+                      border:2px solid var(--light-blue); border-radius:6px; font-size:1rem;">
+
+        <button class="btn-primary"
+                style="margin-left:1rem; margin-top:1rem;"
+                onclick="lookupSeat()">
+          ตรวจสอบ
+        </button>
+      </div>
+
+      <!-- กล่องแสดงผล -->
+      <div id="result-box"></div>
     </div>
 
-    <div class="content-section" style="margin-top: 3rem;">
+    <!-- ข้อปฏิบัติในวันสอบ (เหมือนเดิมของแพร) -->
+    <div class="content-section" style="margin-top:3rem;">
       <h2 class="section-title">ข้อปฏิบัติในวันสอบ</h2>
-      <ol style="margin-left: 2rem; line-height: 1.8; font-size: 1rem; color: var(--text-dark);">
+      <ol style="margin-left:2rem; line-height:1.8; font-size:1rem; color:var(--text-dark);">
         <li>1. ผู้เข้าสอบจะต้องแต่งกายด้วยเครื่องแบบนักเรียน/นักศึกษา หรือชุดสุภาพเรียบร้อย</li>
         <li>2. ผู้เข้าสอบต้องแสดงบัตรประชาชนหรือบัตรประจำตัวนักเรียนเพื่อยืนยันตัวตน</li>
         <li>3. ผู้เข้าสอบต้องเข้าห้องสอบภายในเวลา 8:45–8:55 น. และไม่อนุญาตให้เข้าห้องสอบหลังเวลา 8:55 น.</li>
@@ -917,8 +1163,9 @@
         <li>9. เมื่อสิ้นสุดการสอบ ผู้เข้าสอบสามารถนำเฉพาะตัวข้อสอบกลับได้โดยไม่นำกระดาษคำตอบกลับไป</li>
       </ol>
     </div>
-   </div>
-  </main>
+  </div>
+</main>
+
 
   <!-- ===================== Results Page ===================== -->
   <main id="results" class="main-content">
@@ -1268,5 +1515,161 @@
       }
     })();
   </script>
+
+
+<script>
+// ====== ข้อมูลผู้เข้าสอบทั้งหมด ======
+const students = [
+  { cid:"1809902476881", name:"นาย นรวีร์ คงวรรณ", seat:"01", level:"ม.5", program:"วิทย์-คณิต", school:"เตรียมวิทย์พัฒนา", province:"กรุงเทพมหานคร" },
+  { cid:"1459100047575", name:"นาย ธนาคาร  เสียนดอน", seat:"02", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
+  { cid:"1139900559921", name:"นาย ปฏิภาณ กาจันทร์", seat:"03", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
+  { cid:"1139900564453", name:"นาย อนุพงษ์ วงศ์สงวน", seat:"04", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
+  { cid:"1100801614039", name:"นางสาว แพร เหล่าพันธ์รัตนาทวี", seat:"05", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
+  { cid:"1839902016953", name:"นางสาว มณัญญา เพิ่มพูล", seat:"06", level:"ม.5", program:"วิทย์-คณิตศาสตร์", school:"โรงเรียนเฉลิมพระเกียรติฯ ภูเก็ต", province:"ภูเก็ต" },
+  { cid:"1820501279238", name:"นางสาว ภคนันท์ สุขวโรดม", seat:"07", level:"ม.5", program:"วิทย์-คณิต", school:"เฉลิมพระเกียรติ ภูเก็ต", province:"ภูเก็ต" },
+  { cid:"1480301237497", name:"นาย พงศ์พันธ์ นัตสิทธิ์", seat:"08", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก" },
+  { cid:"1269900443981", name:"นาย ชุษณะ สุขรำมิ", seat:"09", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก" },
+  { cid:"1820501272918", name:"นาย พีรภัทร พึ่งสมบัติพานิช", seat:"10", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
+  { cid:"1104500090301", name:"นาย ณฐกร อ๋าประยูร", seat:"11", level:"ม.6", program:"วิทย์-คณิต เตรียมวิศวกรรมหุ่นยนต์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
+  { cid:"1101000202493", name:"นางสาว ศิวรา เพิ่มพูล", seat:"12", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"สุขุมนวพันธ์อุปถัทภ์" },
+  { cid:"1103400130033", name:"นางสาว ญารินดา สูเจริญ", seat:"13", level:"ม.6", program:"คณิตศาสตร์  อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
+  { cid:"1630500228275", name:"นางสาว สุทธิดา คีรีดิลก", seat:"14", level:"ม.6", program:"ศิลป์คำนวณ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
+  { cid:"1103200140710", name:"นาย สมบูรณ์เกียรติ จันทร์กอง", seat:"15", level:"ม.6", program:"คณิตศาสตร์-อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพฯ" },
+  { cid:"1510101523703", name:"นาย หรรษกร วงศ์อ่อนตา", seat:"16", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1149900965661", name:"นาย สุชาติ แสวงศรี", seat:"17", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์(เตรียมวิศวะหุ่นยนต์)", school:"สุขุมนวพันธุ์ อุปถัมภ์", province:"กรุงเทพมหานคร" },
+  { cid:"1260401182165", name:"นาย กฤตภาส คงสืบ", seat:"18", level:"ม.6", program:"คณิต-อังกฤษ", school:"สวนกุหลาบวิทยาลัยรังสิต", province:"ปทุมธานี" },
+  { cid:"1104200639812", name:"นาย สมิตพงษ์ ตานนท์", seat:"19", level:"ม.6", program:"วิทย์ คณิต", school:"สารสาสน์วิเทศรังสิต", province:"ปทุมธานี" },
+  { cid:"1100401451400", name:"นาย คณบดี  สาธิตสิน", seat:"20", level:"ม.5", program:"วิทย์คณิต", school:"ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1269900469387", name:"นาย วรดร ดวงสุวรรณ์", seat:"21", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1104301207721", name:"นาย จิรวัตน์  ชะนะโรค", seat:"22", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"โรงเรียนเขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1199901263252", name:"นาย จิรทีปต์ คามพิมาย", seat:"23", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1103200134256", name:"นางสาว พิมพ์ลภัส จันทร์สกุล", seat:"24", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนเซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1319800582423", name:"นาย ชัชนันท์ น้าเจริญ", seat:"25", level:"ม.4", program:"วิทย์-คณิต", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1199901290748", name:"นาย ปฏิภัทร สะมะที", seat:"26", level:"ม.4", program:"วิทยาศาสตร์คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1199901170912", name:"นางสาว สุธาสินี เอนกบุญ", seat:"27", level:"ม.6", program:"คณิตศาสตร์-วิทยาศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
+  { cid:"1749800449142", name:"นาย ธนานันต์ อำแดงพิน", seat:"28", level:"ม.5", program:"วิทยาศาสตร์ -คณิตศาสตร์ เตรียมวิศวกรรมศาสตร์", school:"กระทุ่มแบน”วิเศษสมุทคุณ”", province:"สมุทรสาคร" },
+  { cid:"1749800453174", name:"นางสาว ภิรญา ไตรรัตจิต", seat:"29", level:"ม.5", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"กระทุ่มแบน\"\"วิเศษสมุทรคุณ\"\"\"", province:"สมุทรสาคร" },
+  { cid:"1509966669098", name:"นางสาว พนัชกร บุญสวัสดิ์", seat:"30", level:"ม.5", program:"เตรียมวิศวกรรมศาสตร์", school:"ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1103704333406", name:"นาย นนทพันธ์ คำมงคุณ", seat:"31", level:"ม.5", program:"SEP (science engineer program)", school:"ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1100501716031", name:"นาย รัชณัฏฐพล บุญช่วย", seat:"32", level:"ม.5", program:"SEP", school:"ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1709700385584", name:"นาย อภิสิทธิ์ กุลทิพย์", seat:"33", level:"ม.5", program:"SEP", school:"โรงเรียนธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1104000198669", name:"นาย วริทธิ์นันท์ ธนะวงษ์", seat:"34", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนมัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
+  { cid:"1160101950079", name:"นาย เครดิต เทียมนุช", seat:"35", level:"ม.6", program:"ศิลป์-คำนวณ", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
+  { cid:"1100801610777", name:"นางสาว รสริน งามแสงชัยกิจ", seat:"36", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1199901263601", name:"นาย ศิวกร ศรีเพ็ชร์", seat:"37", level:"ม.5", program:"ศิลป์-คำนวณ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1199901310005", name:"นาย สันติสุข รอดเขียน", seat:"38", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1149901153210", name:"นางสาว นภัสสร แตงอ่อน", seat:"39", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1199901267274", name:"นาย เพรียวพงศ์ ชัยวงค์", seat:"40", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1709901805998", name:"นาย กนก ศรลัมพ์", seat:"41", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1139600576103", name:"นาย ชวกร ยวงลำใย", seat:"42", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1199901282290", name:"นาย ธีรภัทร เบญจขันธ์", seat:"43", level:"ม.4", program:"วิทย์-คณิต", school:"หนองเเค \"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
+  { cid:"1199700170711", name:"นางสาว กัลย์สุดา จันทร์สำอางค์", seat:"44", level:"ม.5", program:"วิทย์-คณิต", school:"หนองแค ”สรกิจพิทยา“", province:"สระยุรี" },
+  { cid:"1189900485847", name:"นางสาว ธมลวรรณ แต่ศิวิลัย", seat:"45", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท" },
+  { cid:"1609900900190", name:"นางสาว ชาลิสา ช่างทอง", seat:"46", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท" },
+  { cid:"1102003911879", name:"นาย ภัทรธร โพธิ์สิทธิ์", seat:"47", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
+  { cid:"1669900592151", name:"นาย ดนัย ชีวสถาพรชัย", seat:"48", level:"ม.6", program:"วิทย์-คณิต-อังกฤษ (Gifted)", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
+  { cid:"1139600500140", name:"นางสาว ฐิติรัตน์  บัวคอม", seat:"49", level:"ม.5", program:"วิทย์-คอม", school:"จอมสุรางค์อุปถัมภ์", province:"พระนครศรีอยุธยา" },
+  { cid:"1100703968910", name:"นาย พฤฒินันท์ แก้วงาม", seat:"50", level:"ม.6", program:"วิทย์-คณิต (IGP)", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ" },
+  { cid:"1119902401292", name:"นาย พงษ์พันธ์ ปริวินิจฉัย", seat:"51", level:"ม.6", program:"วิทย์-คณิต IGP", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ" },
+  { cid:"1119902381003", name:"นางสาว วรัญญา มาเรียน", seat:"52", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ" },
+  { cid:"1119902551707", name:"นาย จิณณ์จุฑาห์ สิทธิ์ประกรณ์", seat:"53", level:"ม.4", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ" },
+  { cid:"1139600521775", name:"นางสาว วรุณยุภา เนตรลา", seat:"54", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
+  { cid:"1729100083200", name:"นางสาว นางสาวกิ่งกาญจน์  โชติไพบูลย์วัฒนา", seat:"55", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
+  { cid:"1500701406481", name:"นาย ภาณุวัฒน์  ปันธิยะ", seat:"56", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
+  { cid:"1729100089755", name:"นาย ญานวิชญ์  เนตรลา", seat:"57", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
+  { cid:"1129600036702", name:"นาย ณัฏฐชัย ลำภู", seat:"58", level:"ม.6", program:"ศิลป์คำนวณ", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1104301107573", name:"นางสาว สิรภัทร กลั่นสอน", seat:"59", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1104200741005", name:"นางสาว นิพพานรัตน์ สินสืบผล", seat:"60", level:"ม.4", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1104200661532", name:"นางสาว ณฐมน ศักดิ์สุริยา", seat:"61", level:"ม.5", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1102200270914", name:"นางสาว ปาณปวีณ์ บังเกิดผล", seat:"62", level:"ม.5", program:"วิทย์ - คณิต (ดิจิตอล)", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
+  { cid:"1103704201747", name:"นางสาว วุฒิดา มากเมือง", seat:"63", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
+  { cid:"1101402400508", name:"นาย วิทู ศรีปัญญา", seat:"64", level:"ม.5", program:"วิทย์-คณิต", school:"สวนกุหลาบวิทยาลัย รังสิต", province:"ปทุมธานี" },
+  { cid:"1104301041343", name:"นาย นนทกร บัวแก้ว", seat:"65", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพฯ" }
+];
+
+// ====== ฟังก์ชัน "ตรวจสอบที่นั่งสอบ" ======
+function lookupSeat() {
+  const cidInput = document.getElementById("cid");
+  const resultBox = document.getElementById("result-box");
+  const cid = cidInput.value.trim();
+
+  // แสดงกล่องผลลัพธ์ทุกครั้งที่กด
+  resultBox.style.display = "block";
+
+  // กรณีไม่กรอกอะไรเลย
+  if (!cid) {
+    resultBox.innerHTML = `
+      <div class="result-error">
+        <div class="result-error-title">กรุณากรอกเลขบัตรประชาชน</div>
+        <div class="result-error-sub">
+          ใส่เลขบัตรประชาชน 13 หลักของนักเรียน แล้วกดปุ่ม "ตรวจสอบ" อีกครั้งค่ะ
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // หาใน array
+  const student = students.find(s => s.cid === cid);
+
+  // ไม่พบข้อมูล
+  if (!student) {
+    resultBox.innerHTML = `
+      <div class="result-error">
+        <div class="result-error-title">❌ ไม่พบข้อมูลผู้เข้าสอบ</div>
+        <div class="result-error-sub">
+          • กรุณาตรวจสอบเลขบัตรประชาชนอีกครั้ง<br>
+          • หากแน่ใจว่าถูกต้องแล้ว ให้ติดต่อเจ้าหน้าที่โครงการเพื่อยืนยันสิทธิ์เข้าสอบ
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // ถ้าพบข้อมูล → การ์ดสวย ๆ
+  resultBox.innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <div>
+          <div class="name-text">👤 ${student.name}</div>
+        </div>
+        <div class="seat-badge">
+          <span>เลขที่นั่งสอบ</span> ${student.seat}
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div>
+          <div class="meta-item-label">ระดับชั้น</div>
+          <div class="meta-item-value">${student.level}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">แผนการเรียน</div>
+          <div class="meta-item-value">${student.program}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">โรงเรียน</div>
+          <div class="meta-item-value">${student.school}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">จังหวัด</div>
+          <div class="meta-item-value">${student.province}</div>
+        </div>
+      </div>
+
+      <div class="meta-tag-row">
+        <span class="meta-tag">RMUTT Math Competition 2025</span>
+        <span class="meta-tag">สนามสอบ มทร.ธัญบุรี</span>
+        <span class="meta-tag">เลขที่นั่ง: ${student.seat}</span>
+      </div>
+    </div>
+  `;
+}
+</script>
+
+
+
+
+  
  </body>
 </html>
