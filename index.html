@@ -525,6 +525,39 @@
     color: #020617;
   }
 
+  /* 🔵 ส่วนใหม่: กล่องแสดงห้องสอบ / ชั้น / อาคาร */
+  .exam-info {
+    position: relative;
+    margin-top: 1.1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 0.9rem;
+    background: rgba(248, 250, 252, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    z-index: 1;
+  }
+
+  .exam-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .exam-label {
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .exam-value {
+    font-weight: 500;
+    color: #020617;
+    text-align: right;
+  }
+
   .meta-tag-row {
     position: relative;
     display: flex;
@@ -597,6 +630,11 @@
 
     .seat-badge {
       align-self: flex-start;
+    }
+
+    .exam-row {
+      flex-direction: row;
+      align-items: flex-start;
     }
   }
 
@@ -1586,15 +1624,28 @@ const students = [
   { cid:"1101402400508", name:"นาย วิทู ศรีปัญญา", seat:"64", level:"ม.5", program:"วิทย์-คณิต", school:"สวนกุหลาบวิทยาลัย รังสิต", province:"ปทุมธานี" },
   { cid:"1104301041343", name:"นาย นนทกร บัวแก้ว", seat:"65", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพฯ" }
 ];
+// ====== เติมข้อมูลชั้น–ห้อง–อาคารให้ทุกคน ======
+students.forEach(s => {
+  const seatNum = parseInt(s.seat, 10);
 
+  if (seatNum >= 1 && seatNum <= 35) {
+    s.floor = "ชั้น 3";
+    s.room = "ST1301";
+  } else {
+    s.floor = "ชั้น 4";
+    s.room = "ST1401";
+  }
+
+  s.building = "คณะวิทยาศาสตร์และเทคโนโลยี อาคารเฉลิมพระเกียรติ 6 รอบพระชนมพรรษา";
+});
 // ====== ฟังก์ชัน "ตรวจสอบที่นั่งสอบ" ======
 function lookupSeat() {
   const cidInput = document.getElementById("cid");
   const resultBox = document.getElementById("result-box");
   const cid = cidInput.value.trim();
 
-  // แสดงกล่องผลลัพธ์ทุกครั้งที่กด
-  resultBox.style.display = "block";
+  // แสดงกล่องผลลัพธ์ทุกครั้งที่กด (ใช้ class .show ให้ตรงกับ CSS)
+  resultBox.classList.add("show");
 
   // กรณีไม่กรอกอะไรเลย
   if (!cid) {
@@ -1657,6 +1708,22 @@ function lookupSeat() {
         </div>
       </div>
 
+      <!-- ✅ ส่วนใหม่: ห้องสอบ / ชั้น / อาคาร -->
+      <div class="exam-info">
+        <div class="exam-row">
+          <span class="exam-label">ห้องสอบ:</span>
+          <span class="exam-value">${student.room}</span>
+        </div>
+        <div class="exam-row">
+          <span class="exam-label">ชั้นที่สอบ:</span>
+          <span class="exam-value">${student.floor}</span>
+        </div>
+        <div class="exam-row">
+          <span class="exam-label">อาคารสอบ:</span>
+          <span class="exam-value">อาคารคณะวิทยาศาสตร์และเทคโนโลยี</span>
+        </div>
+      </div>
+
       <div class="meta-tag-row">
         <span class="meta-tag">RMUTT Math Competition 2025</span>
         <span class="meta-tag">สนามสอบ มทร.ธัญบุรี</span>
@@ -1665,6 +1732,7 @@ function lookupSeat() {
     </div>
   `;
 }
+
 </script>
 
 
