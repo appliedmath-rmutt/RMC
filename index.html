@@ -636,6 +636,13 @@
       flex-direction: row;
       align-items: flex-start;
     }
+    .award-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin-top: 0.2rem;
+}
+
   }
 
   /* Animations */
@@ -665,6 +672,7 @@
       background-position: 0% 50%;
     }
   }
+
 </style>
 
 
@@ -720,7 +728,7 @@
      <div class="hero-buttons">
        <!-- ปุ่มที่มี data-page เพื่อสลับหน้า -->
        <a href="#" class="btn-primary" data-page="seats">ตรวจสอบเลขที่นั่งสอบ</a>
-       <a href="#" class="btn-secondary" data-page="schedule">กำหนดการ</a>
+       <a href="#" class="btn-secondary" data-page="results">ประกาศผลสอบ</a>
      </div>
     </div>
 
@@ -1205,23 +1213,64 @@
 </main>
 
 
-  <!-- ===================== Results Page ===================== -->
+    <!-- ===================== Results Page ===================== -->
   <main id="results" class="main-content">
-   <div class="content-page">
-    <h1 class="page-title">ผลการสอบ</h1>
-    <div class="content-section">
-     <h2 class="section-title">ตรวจสอบผลการสอบ</h2>
-     <p>ระบบจะประกาศผลการสอบในวันที่ 25 พฤศจิกายน 2568</p>
+    <div class="content-page">
+      <h1 class="page-title">ผลการสอบ</h1>
 
-     <div style="margin-top: 2rem;">
-       <label for="result-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">รหัสนักศึกษา:</label>
-       <input type="text" id="result-id" placeholder="กรอกรหัสนักศึกษา"
-              style="width: 100%; max-width: 300px; padding: 0.75rem; border: 2px solid var(--light-blue); border-radius: 6px; font-size: 1rem;">
-       <button class="btn-primary" style="margin-left: 1rem; margin-top: 1rem;">ตรวจสอบผล</button>
-     </div>
+      <div class="content-section">
+        <h2 class="section-title">ตรวจสอบผลการสอบ</h2>
+        <p>กรุณากรอกเลขบัตรประจำตัวประชาชน 13 หลัก เพื่อดูผลคะแนนสอบและดาวน์โหลดเกียรติบัตร</p>
+
+        <div style="margin-top: 2rem;">
+          <label for="result-cid"
+                 style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+            เลขบัตรประจำตัวประชาชน:
+          </label>
+
+          <input type="text" id="result-cid" placeholder="กรอกเลขบัตรประชาชน 13 หลัก"
+                 style="width: 100%; max-width: 300px; padding: 0.75rem;
+                        border: 2px solid var(--light-blue); border-radius: 6px; font-size: 1rem;">
+<!-- PDPA Consent Checkbox -->
+<div class="mb-6 flex items-start">
+  <div class="flex items-center h-5">
+    <input id="pdpa-consent" name="pdpa-consent" type="checkbox"
+           class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+  </div>
+  <div class="ml-3 text-sm">
+    <label for="pdpa-consent" class="text-gray-600">
+      ข้าพเจ้ายืนยันว่าหมายเลขประจำตัวประชาชนที่กรอกเป็นของข้าพเจ้าเอง
+      และยินยอมให้มีการประมวลผลข้อมูลส่วนบุคคลเพื่อตรวจสอบคะแนน
+    </label>
+  </div>
+</div>
+
+<button id="result-btn" class="btn-primary"
+        style="margin-left: 1rem; margin-top: 1rem;"
+        onclick="lookupResult()" disabled>
+  ตรวจสอบผล
+</button>        
+</div>
+
+        <!-- กล่องแสดงผลการสอบ (ใช้การ์ดดีไซน์เดียวกับที่นั่งสอบ) -->
+        <div id="result-box-score" style="max-width: 560px; margin: 1.75rem auto 0;"></div>
+
+        <!-- ส่วนกราฟคะแนน (ซ่อนอยู่ก่อน จะแสดงเมื่อมีข้อมูลคะแนน) -->
+        <div id="score-chart-wrapper" style="display:none; margin-top: 2.5rem;">
+          <h2 class="section-title" style="text-align:center;">กราฟโค้งปกติและตำแหน่งคะแนนของคุณ</h2>
+          <div style="margin-top: 1rem; background: #fff; border-radius: 1rem;
+                      padding: 1.5rem; box-shadow: 0 10px 25px rgba(15,23,42,0.12);">
+            <canvas id="scoreChart" width="640" height="260"></canvas>
+            <p style="margin-top: 0.75rem; font-size: 0.9rem; color: #4b5563;">
+              เส้นโค้งแสดงการแจกแจงแบบปกติประมาณจากคะแนนทั้งหมดของผู้เข้าสอบ
+              เส้นแนวตั้งสีแดงคือ<strong>ตำแหน่งคะแนนของคุณ</strong>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-   </div>
   </main>
+
 
   <!-- ===================== Contact Page ===================== -->
   <main id="contact" class="main-content bg-gray-50 py-16">
@@ -1399,6 +1448,8 @@
             });
         });
 
+        
+
         /* onConfigChange: ถูกเรียกเมื่อค่าคอนฟิกเปลี่ยน (จาก Element SDK) */
         async function onConfigChange(config) {
             const heroTitle = document.querySelector('.hero-content h1');
@@ -1558,72 +1609,73 @@
 <script>
 // ====== ข้อมูลผู้เข้าสอบทั้งหมด ======
 const students = [
-  { cid:"1809902476881", name:"นาย นรวีร์ คงวรรณ", seat:"01", level:"ม.5", program:"วิทย์-คณิต", school:"เตรียมวิทย์พัฒนา", province:"กรุงเทพมหานคร" },
-  { cid:"1459100047575", name:"นาย ธนาคาร  เสียนดอน", seat:"02", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
-  { cid:"1139900559921", name:"นาย ปฏิภาณ กาจันทร์", seat:"03", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
-  { cid:"1139900564453", name:"นาย อนุพงษ์ วงศ์สงวน", seat:"04", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
-  { cid:"1100801614039", name:"นางสาว แพร เหล่าพันธ์รัตนาทวี", seat:"05", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี" },
-  { cid:"1839902016953", name:"นางสาว มณัญญา เพิ่มพูล", seat:"06", level:"ม.5", program:"วิทย์-คณิตศาสตร์", school:"โรงเรียนเฉลิมพระเกียรติฯ ภูเก็ต", province:"ภูเก็ต" },
-  { cid:"1820501279238", name:"นางสาว ภคนันท์ สุขวโรดม", seat:"07", level:"ม.5", program:"วิทย์-คณิต", school:"เฉลิมพระเกียรติ ภูเก็ต", province:"ภูเก็ต" },
-  { cid:"1480301237497", name:"นาย พงศ์พันธ์ นัตสิทธิ์", seat:"08", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก" },
-  { cid:"1269900443981", name:"นาย ชุษณะ สุขรำมิ", seat:"09", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก" },
-  { cid:"1820501272918", name:"นาย พีรภัทร พึ่งสมบัติพานิช", seat:"10", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
-  { cid:"1104500090301", name:"นาย ณฐกร อ๋าประยูร", seat:"11", level:"ม.6", program:"วิทย์-คณิต เตรียมวิศวกรรมหุ่นยนต์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
-  { cid:"1101000202493", name:"นางสาว ศิวรา เพิ่มพูล", seat:"12", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"สุขุมนวพันธ์อุปถัทภ์" },
-  { cid:"1103400130033", name:"นางสาว ญารินดา สูเจริญ", seat:"13", level:"ม.6", program:"คณิตศาสตร์  อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
-  { cid:"1630500228275", name:"นางสาว สุทธิดา คีรีดิลก", seat:"14", level:"ม.6", program:"ศิลป์คำนวณ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร" },
-  { cid:"1103200140710", name:"นาย สมบูรณ์เกียรติ จันทร์กอง", seat:"15", level:"ม.6", program:"คณิตศาสตร์-อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพฯ" },
-  { cid:"1510101523703", name:"นาย หรรษกร วงศ์อ่อนตา", seat:"16", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1149900965661", name:"นาย สุชาติ แสวงศรี", seat:"17", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์(เตรียมวิศวะหุ่นยนต์)", school:"สุขุมนวพันธุ์ อุปถัมภ์", province:"กรุงเทพมหานคร" },
-  { cid:"1260401182165", name:"นาย กฤตภาส คงสืบ", seat:"18", level:"ม.6", program:"คณิต-อังกฤษ", school:"สวนกุหลาบวิทยาลัยรังสิต", province:"ปทุมธานี" },
-  { cid:"1104200639812", name:"นาย สมิตพงษ์ ตานนท์", seat:"19", level:"ม.6", program:"วิทย์ คณิต", school:"สารสาสน์วิเทศรังสิต", province:"ปทุมธานี" },
-  { cid:"1100401451400", name:"นาย คณบดี  สาธิตสิน", seat:"20", level:"ม.5", program:"วิทย์คณิต", school:"ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1269900469387", name:"นาย วรดร ดวงสุวรรณ์", seat:"21", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1104301207721", name:"นาย จิรวัตน์  ชะนะโรค", seat:"22", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"โรงเรียนเขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1199901263252", name:"นาย จิรทีปต์ คามพิมาย", seat:"23", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1103200134256", name:"นางสาว พิมพ์ลภัส จันทร์สกุล", seat:"24", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนเซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1319800582423", name:"นาย ชัชนันท์ น้าเจริญ", seat:"25", level:"ม.4", program:"วิทย์-คณิต", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1199901290748", name:"นาย ปฏิภัทร สะมะที", seat:"26", level:"ม.4", program:"วิทยาศาสตร์คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1199901170912", name:"นางสาว สุธาสินี เอนกบุญ", seat:"27", level:"ม.6", program:"คณิตศาสตร์-วิทยาศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก" },
-  { cid:"1749800449142", name:"นาย ธนานันต์ อำแดงพิน", seat:"28", level:"ม.5", program:"วิทยาศาสตร์ -คณิตศาสตร์ เตรียมวิศวกรรมศาสตร์", school:"กระทุ่มแบน”วิเศษสมุทคุณ”", province:"สมุทรสาคร" },
-  { cid:"1749800453174", name:"นางสาว ภิรญา ไตรรัตจิต", seat:"29", level:"ม.5", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"กระทุ่มแบน\"\"วิเศษสมุทรคุณ\"\"\"", province:"สมุทรสาคร" },
-  { cid:"1509966669098", name:"นางสาว พนัชกร บุญสวัสดิ์", seat:"30", level:"ม.5", program:"เตรียมวิศวกรรมศาสตร์", school:"ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1103704333406", name:"นาย นนทพันธ์ คำมงคุณ", seat:"31", level:"ม.5", program:"SEP (science engineer program)", school:"ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1100501716031", name:"นาย รัชณัฏฐพล บุญช่วย", seat:"32", level:"ม.5", program:"SEP", school:"ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1709700385584", name:"นาย อภิสิทธิ์ กุลทิพย์", seat:"33", level:"ม.5", program:"SEP", school:"โรงเรียนธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1104000198669", name:"นาย วริทธิ์นันท์ ธนะวงษ์", seat:"34", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนมัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
-  { cid:"1160101950079", name:"นาย เครดิต เทียมนุช", seat:"35", level:"ม.6", program:"ศิลป์-คำนวณ", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
-  { cid:"1100801610777", name:"นางสาว รสริน งามแสงชัยกิจ", seat:"36", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1199901263601", name:"นาย ศิวกร ศรีเพ็ชร์", seat:"37", level:"ม.5", program:"ศิลป์-คำนวณ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1199901310005", name:"นาย สันติสุข รอดเขียน", seat:"38", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1149901153210", name:"นางสาว นภัสสร แตงอ่อน", seat:"39", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1199901267274", name:"นาย เพรียวพงศ์ ชัยวงค์", seat:"40", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1709901805998", name:"นาย กนก ศรลัมพ์", seat:"41", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1139600576103", name:"นาย ชวกร ยวงลำใย", seat:"42", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1199901282290", name:"นาย ธีรภัทร เบญจขันธ์", seat:"43", level:"ม.4", program:"วิทย์-คณิต", school:"หนองเเค \"\"สรกิจพิทยา\"\"\"", province:"สระบุรี" },
-  { cid:"1199700170711", name:"นางสาว กัลย์สุดา จันทร์สำอางค์", seat:"44", level:"ม.5", program:"วิทย์-คณิต", school:"หนองแค ”สรกิจพิทยา“", province:"สระยุรี" },
-  { cid:"1189900485847", name:"นางสาว ธมลวรรณ แต่ศิวิลัย", seat:"45", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท" },
-  { cid:"1609900900190", name:"นางสาว ชาลิสา ช่างทอง", seat:"46", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท" },
-  { cid:"1102003911879", name:"นาย ภัทรธร โพธิ์สิทธิ์", seat:"47", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
-  { cid:"1669900592151", name:"นาย ดนัย ชีวสถาพรชัย", seat:"48", level:"ม.6", program:"วิทย์-คณิต-อังกฤษ (Gifted)", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร" },
-  { cid:"1139600500140", name:"นางสาว ฐิติรัตน์  บัวคอม", seat:"49", level:"ม.5", program:"วิทย์-คอม", school:"จอมสุรางค์อุปถัมภ์", province:"พระนครศรีอยุธยา" },
-  { cid:"1100703968910", name:"นาย พฤฒินันท์ แก้วงาม", seat:"50", level:"ม.6", program:"วิทย์-คณิต (IGP)", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ" },
-  { cid:"1119902401292", name:"นาย พงษ์พันธ์ ปริวินิจฉัย", seat:"51", level:"ม.6", program:"วิทย์-คณิต IGP", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ" },
-  { cid:"1119902381003", name:"นางสาว วรัญญา มาเรียน", seat:"52", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ" },
-  { cid:"1119902551707", name:"นาย จิณณ์จุฑาห์ สิทธิ์ประกรณ์", seat:"53", level:"ม.4", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ" },
-  { cid:"1139600521775", name:"นางสาว วรุณยุภา เนตรลา", seat:"54", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
-  { cid:"1729100083200", name:"นางสาว นางสาวกิ่งกาญจน์  โชติไพบูลย์วัฒนา", seat:"55", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
-  { cid:"1500701406481", name:"นาย ภาณุวัฒน์  ปันธิยะ", seat:"56", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
-  { cid:"1729100089755", name:"นาย ญานวิชญ์  เนตรลา", seat:"57", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี" },
-  { cid:"1129600036702", name:"นาย ณัฏฐชัย ลำภู", seat:"58", level:"ม.6", program:"ศิลป์คำนวณ", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1104301107573", name:"นางสาว สิรภัทร กลั่นสอน", seat:"59", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1104200741005", name:"นางสาว นิพพานรัตน์ สินสืบผล", seat:"60", level:"ม.4", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1104200661532", name:"นางสาว ณฐมน ศักดิ์สุริยา", seat:"61", level:"ม.5", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1102200270914", name:"นางสาว ปาณปวีณ์ บังเกิดผล", seat:"62", level:"ม.5", program:"วิทย์ - คณิต (ดิจิตอล)", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี" },
-  { cid:"1103704201747", name:"นางสาว วุฒิดา มากเมือง", seat:"63", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร" },
-  { cid:"1101402400508", name:"นาย วิทู ศรีปัญญา", seat:"64", level:"ม.5", program:"วิทย์-คณิต", school:"สวนกุหลาบวิทยาลัย รังสิต", province:"ปทุมธานี" },
-  { cid:"1104301041343", name:"นาย นนทกร บัวแก้ว", seat:"65", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพฯ" }
+  { cid:"1809902476881", name:"นาย นรวีร์ คงวรรณ", seat:"01", level:"ม.5", program:"วิทย์-คณิต", school:"เตรียมวิทย์พัฒนา", province:"กรุงเทพมหานคร", score:56 },
+  { cid:"1459100047575", name:"นาย ธนาคาร  เสียนดอน", seat:"02", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี", score:12 },
+  { cid:"1139900559921", name:"นาย ปฏิภาณ กาจันทร์", seat:"03", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี", score:34 },
+  { cid:"1139900564453", name:"นาย อนุพงษ์ วงศ์สงวน", seat:"04", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี", score:24 },
+  { cid:"1100801614039", name:"นางสาว แพร เหล่าพันธ์รัตนาทวี", seat:"05", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"บัวแก้วเกษร", province:"ปทุมธานี", score:56 },
+  { cid:"1839902016953", name:"นางสาว มณัญญา เพิ่มพูล", seat:"06", level:"ม.5", program:"วิทย์-คณิตศาสตร์", school:"โรงเรียนเฉลิมพระเกียรติฯ ภูเก็ต", province:"ภูเก็ต", score:12 },
+  { cid:"1820501279238", name:"นางสาว ภคนันท์ สุขวโรดม", seat:"07", level:"ม.5", program:"วิทย์-คณิต", school:"เฉลิมพระเกียรติ ภูเก็ต", province:"ภูเก็ต", score:34 },
+  { cid:"1480301237497", name:"นาย พงศ์พันธ์ นัตสิทธิ์", seat:"08", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก", score:66 },
+  { cid:"1269900443981", name:"นาย ชุษณะ สุขรำมิ", seat:"09", level:"ม.6", program:"วิทยาศาสตร์ คณิตศาสตร์", school:"นวมราชานุสรณ์", province:"นครนายก", score:45 },
+  { cid:"1820501272918", name:"นาย พีรภัทร พึ่งสมบัติพานิช", seat:"10", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร", score:88 },
+  { cid:"1104500090301", name:"นาย ณฐกร อ๋าประยูร", seat:"11", level:"ม.6", program:"วิทย์-คณิต เตรียมวิศวกรรมหุ่นยนต์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร", score:56 },
+  { cid:"1101000202493", name:"นางสาว ศิวรา เพิ่มพูล", seat:"12", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"สุขุมนวพันธ์อุปถัมภ์", province:"สุขุมนวพันธ์อุปถัทภ์", score:48 },
+  { cid:"1103400130033", name:"นางสาว ญารินดา สูเจริญ", seat:"13", level:"ม.6", program:"คณิตศาสตร์  อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร", score:45 },
+  { cid:"1630500228275", name:"นางสาว สุทธิดา คีรีดิลก", seat:"14", level:"ม.6", program:"ศิลป์คำนวณ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพมหานคร", score:97 },
+  { cid:"1103200140710", name:"นาย สมบูรณ์เกียรติ จันทร์กอง", seat:"15", level:"ม.6", program:"คณิตศาสตร์-อังกฤษ", school:"สุขุมนวพันธ์อุปถัมภ์", province:"กรุงเทพฯ", score:67 },
+  { cid:"1510101523703", name:"นาย หรรษกร วงศ์อ่อนตา", seat:"16", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร", score:89 },
+  { cid:"1149900965661", name:"นาย สุชาติ แสวงศรี", seat:"17", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์(เตรียมวิศวะหุ่นยนต์)", school:"สุขุมนวพันธุ์ อุปถัมภ์", province:"กรุงเทพมหานคร", score:33 },
+  { cid:"1260401182165", name:"นาย กฤตภาส คงสืบ", seat:"18", level:"ม.6", program:"คณิต-อังกฤษ", school:"สวนกุหลาบวิทยาลัยรังสิต", province:"ปทุมธานี", score:44 },
+  { cid:"1104200639812", name:"นาย สมิตพงษ์ ตานนท์", seat:"19", level:"ม.6", program:"วิทย์ คณิต", school:"สารสาสน์วิเทศรังสิต", province:"ปทุมธานี", score:33 },
+  { cid:"1100401451400", name:"นาย คณบดี  สาธิตสิน", seat:"20", level:"ม.5", program:"วิทย์คณิต", school:"ธัญบุรี", province:"ปทุมธานี", score:22 },
+  { cid:"1269900469387", name:"นาย วรดร ดวงสุวรรณ์", seat:"21", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:22 },
+  { cid:"1104301207721", name:"นาย จิรวัตน์  ชะนะโรค", seat:"22", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"โรงเรียนเขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:56 },
+  { cid:"1199901263252", name:"นาย จิรทีปต์ คามพิมาย", seat:"23", level:"ม.4", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:46 },
+  { cid:"1103200134256", name:"นางสาว พิมพ์ลภัส จันทร์สกุล", seat:"24", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนเซนต์เทเรซา", province:"กรุงเทพมหานคร", score:43 },
+  { cid:"1319800582423", name:"นาย ชัชนันท์ น้าเจริญ", seat:"25", level:"ม.4", program:"วิทย์-คณิต", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:23 },
+  { cid:"1199901290748", name:"นาย ปฏิภัทร สะมะที", seat:"26", level:"ม.4", program:"วิทยาศาสตร์คณิตศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:78 },
+  { cid:"1199901170912", name:"นางสาว สุธาสินี เอนกบุญ", seat:"27", level:"ม.6", program:"คณิตศาสตร์-วิทยาศาสตร์", school:"เขาเพิ่มนารีผลวิทยา", province:"นครนายก", score:78 },
+  { cid:"1749800449142", name:"นาย ธนานันต์ อำแดงพิน", seat:"28", level:"ม.5", program:"วิทยาศาสตร์ -คณิตศาสตร์ เตรียมวิศวกรรมศาสตร์", school:"กระทุ่มแบน”วิเศษสมุทคุณ”", province:"สมุทรสาคร", score:77 },
+  { cid:"1749800453174", name:"นางสาว ภิรญา ไตรรัตจิต", seat:"29", level:"ม.5", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"กระทุ่มแบน\"\"วิเศษสมุทรคุณ\"\"\"", province:"สมุทรสาคร", score:66 },
+  { cid:"1509966669098", name:"นางสาว พนัชกร บุญสวัสดิ์", seat:"30", level:"ม.5", program:"เตรียมวิศวกรรมศาสตร์", school:"ธัญบุรี", province:"ปทุมธานี", score:77 },
+  { cid:"1103704333406", name:"นาย นนทพันธ์ คำมงคุณ", seat:"31", level:"ม.5", program:"SEP (science engineer program)", school:"ธัญบุรี", province:"ปทุมธานี", score:70 },
+  { cid:"1100501716031", name:"นาย รัชณัฏฐพล บุญช่วย", seat:"32", level:"ม.5", program:"SEP", school:"ธัญบุรี", province:"ปทุมธานี", score:10 },
+  { cid:"1709700385584", name:"นาย อภิสิทธิ์ กุลทิพย์", seat:"33", level:"ม.5", program:"SEP", school:"โรงเรียนธัญบุรี", province:"ปทุมธานี", score:45 },
+  { cid:"1104000198669", name:"นาย วริทธิ์นันท์ ธนะวงษ์", seat:"34", level:"ม.6", program:"วิทย์-คณิต", school:"โรงเรียนมัธยมวัดหนองแขม", province:"กรุงเทพมหานคร", score:34 },
+  { cid:"1160101950079", name:"นาย เครดิต เทียมนุช", seat:"35", level:"ม.6", program:"ศิลป์-คำนวณ", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร", score:33 },
+  { cid:"1100801610777", name:"นางสาว รสริน งามแสงชัยกิจ", seat:"36", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร", score:4 },
+  { cid:"1199901263601", name:"นาย ศิวกร ศรีเพ็ชร์", seat:"37", level:"ม.5", program:"ศิลป์-คำนวณ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:45 },
+  { cid:"1199901310005", name:"นาย สันติสุข รอดเขียน", seat:"38", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:55 },
+  { cid:"1149901153210", name:"นางสาว นภัสสร แตงอ่อน", seat:"39", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:66 },
+  { cid:"1199901267274", name:"นาย เพรียวพงศ์ ชัยวงค์", seat:"40", level:"ม.4", program:"คณิตศาสตร์ - ภาษาอังกฤษ", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:44 },
+  { cid:"1709901805998", name:"นาย กนก ศรลัมพ์", seat:"41", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:55 },
+  { cid:"1139600576103", name:"นาย ชวกร ยวงลำใย", seat:"42", level:"ม.4", program:"วิทย์-คณิต", school:"หนองแค\"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:34 },
+  { cid:"1199901282290", name:"นาย ธีรภัทร เบญจขันธ์", seat:"43", level:"ม.4", program:"วิทย์-คณิต", school:"หนองเเค \"\"สรกิจพิทยา\"\"\"", province:"สระบุรี", score:67 },
+  { cid:"1199700170711", name:"นางสาว กัลย์สุดา จันทร์สำอางค์", seat:"44", level:"ม.5", program:"วิทย์-คณิต", school:"หนองแค ”สรกิจพิทยา“", province:"สระยุรี", score:78 },
+  { cid:"1189900485847", name:"นางสาว ธมลวรรณ แต่ศิวิลัย", seat:"45", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท", score:34 },
+  { cid:"1609900900190", name:"นางสาว ชาลิสา ช่างทอง", seat:"46", level:"ม.6", program:"วิทยาศาสตร์ - คณิตศาสตร์", school:"ชัยนาทพิทยาคม", province:"ชัยนาท", score:86 },
+  { cid:"1102003911879", name:"นาย ภัทรธร โพธิ์สิทธิ์", seat:"47", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร", score:85 },
+  { cid:"1669900592151", name:"นาย ดนัย ชีวสถาพรชัย", seat:"48", level:"ม.6", program:"วิทย์-คณิต-อังกฤษ (Gifted)", school:"มัธยมวัดหนองแขม", province:"กรุงเทพมหานคร", score:44 },
+  { cid:"1139600500140", name:"นางสาว ฐิติรัตน์  บัวคอม", seat:"49", level:"ม.5", program:"วิทย์-คอม", school:"จอมสุรางค์อุปถัมภ์", province:"พระนครศรีอยุธยา", score:55 },
+  { cid:"1100703968910", name:"นาย พฤฒินันท์ แก้วงาม", seat:"50", level:"ม.6", program:"วิทย์-คณิต (IGP)", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ", score:24 },
+  { cid:"1119902401292", name:"นาย พงษ์พันธ์ ปริวินิจฉัย", seat:"51", level:"ม.6", program:"วิทย์-คณิต IGP", school:"เตรียมอุดมศึกษาน้อมเกล้า สมุทรปราการ", province:"สมุทรปราการ", score:34 },
+  { cid:"1119902381003", name:"นางสาว วรัญญา มาเรียน", seat:"52", level:"ม.6", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ", score:22 },
+  { cid:"1119902551707", name:"นาย จิณณ์จุฑาห์ สิทธิ์ประกรณ์", seat:"53", level:"ม.4", program:"วิทย์-คณิต", school:"มัธยมวัดศรีจันทร์ประดิษฐ์ ในพระบรมราชานุเคราะห์", province:"สมุทรปราการ", score:34 },
+  { cid:"1139600521775", name:"นางสาว วรุณยุภา เนตรลา", seat:"54", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี", score:45 },
+  { cid:"1729100083200", name:"นางสาว นางสาวกิ่งกาญจน์  โชติไพบูลย์วัฒนา", seat:"55", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี", score:66 },
+  { cid:"1500701406481", name:"นาย ภาณุวัฒน์  ปันธิยะ", seat:"56", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี", score:77 },
+  { cid:"1729100089755", name:"นาย ญานวิชญ์  เนตรลา", seat:"57", level:"ม.5", program:"วิทย์-คณิต", school:"ด่านช้างวิทยา", province:"สุพรรณบุรี", score:55 },
+  { cid:"1129600036702", name:"นาย ณัฏฐชัย ลำภู", seat:"58", level:"ม.6", program:"ศิลป์คำนวณ", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร", score:88 },
+  { cid:"1104301107573", name:"นางสาว สิรภัทร กลั่นสอน", seat:"59", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร", score:11 },
+  { cid:"1104200741005", name:"นางสาว นิพพานรัตน์ สินสืบผล", seat:"60", level:"ม.4", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี", score:22 },
+  { cid:"1104200661532", name:"นางสาว ณฐมน ศักดิ์สุริยา", seat:"61", level:"ม.5", program:"วิทย์ - คณิต", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี", score:33 },
+  { cid:"1102200270914", name:"นางสาว ปาณปวีณ์ บังเกิดผล", seat:"62", level:"ม.5", program:"วิทย์ - คณิต (ดิจิตอล)", school:"โรงเรียนสาธิตนวัตกรรม มทร. ธัญบุรี", province:"ปทุมธานี", score:44 },
+  { cid:"1103704201747", name:"นางสาว วุฒิดา มากเมือง", seat:"63", level:"ม.6", program:"วิทยาศาสตร์-คณิตศาสตร์", school:"เซนต์เทเรซา", province:"กรุงเทพมหานคร", score:55 },
+  { cid:"1101402400508", name:"นาย วิทู ศรีปัญญา", seat:"64", level:"ม.5", program:"วิทย์-คณิต", school:"สวนกุหลาบวิทยาลัย รังสิต", province:"ปทุมธานี", score:55 },
+  { cid:"1104301041343", name:"นาย นนทกร บัวแก้ว", seat:"65", level:"ม.6", program:"วิทย์-คณิต", school:"เซนต์เทเรซา", province:"กรุงเทพฯ", score:66 }
 ];
+
 // ====== เติมข้อมูลชั้น–ห้อง–อาคารให้ทุกคน ======
 students.forEach(s => {
   const seatNum = parseInt(s.seat, 10);
@@ -1638,6 +1690,10 @@ students.forEach(s => {
 
   s.building = "อาคารเฉลิมพระเกียรติ 6 รอบพระชนมพรรษา";
 });
+
+
+
+
 // ====== ฟังก์ชัน "ตรวจสอบที่นั่งสอบ" ======
 function lookupSeat() {
   const cidInput = document.getElementById("cid");
@@ -1732,6 +1788,296 @@ function lookupSeat() {
     </div>
   `;
 }
+
+// ====== ฟังก์ชันช่วยคำนวณสถิติคะแนน ======
+function getScoreStats() {
+  const scores = students
+    .map(s => typeof s.score === "number" ? s.score : null)
+    .filter(v => v !== null && !isNaN(v));
+
+  if (scores.length === 0) return null;
+
+  const n = scores.length;
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const mean = sum / n;
+  const max = Math.max(...scores);
+  const min = Math.min(...scores);
+  const variance = scores.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / n;
+  const sd = Math.sqrt(variance) || 1; // กันไม่ให้ sd = 0
+
+  return { mean, max, min, sd };
+}
+
+// ====== ฟังก์ชันกำหนดระดับรางวัลจากคะแนน ======
+function getAwardLevel(score) {
+  if (score >= 80) return { key: "gold", label: "เกียรติบัตรระดับเหรียญทอง" };
+  if (score >= 70) return { key: "silver", label: "เกียรติบัตรระดับเหรียญเงิน" };
+  if (score >= 60) return { key: "bronze", label: "เกียรติบัตรระดับเหรียญทองแดง" };
+  if (score >= 50) return { key: "commend", label: "เกียรติบัตรชมเชย" };
+  return null; // ต่ำกว่า 50 ไม่มีรางวัลระดับคะแนน
+}
+
+function getAward(score) {
+  if (score >= 80) return { key: "gold", label: "ได้รับรางวัลเกียรติบัตรระดับเหรียญทอง" };
+  if (score >= 70) return { key: "silver", label: "ได้รับรางวัลเกียรติบัตรระดับเหรียญเงิน" };
+  if (score >= 60) return { key: "bronze", label: "ได้รับรางวัลเกียรติบัตรระดับเหรียญทองแดง" };
+  if (score >= 50) return { key: "commend", label: "ได้รับรางวัลเกียรติบัตรชมเชย" };
+  return null; // ต่ำกว่า 50 ไม่มีรางวัลระดับคะแนน
+}
+
+// ====== ฟังก์ชันแสดงผลคะแนนสอบ ======
+function lookupResult() {
+  const cidInput = document.getElementById("result-cid");
+  const resultBox = document.getElementById("result-box-score");
+  const chartWrapper = document.getElementById("score-chart-wrapper");
+  const cid = cidInput.value.trim();
+
+  // reset
+  resultBox.innerHTML = "";
+  chartWrapper.style.display = "none";
+
+  if (!cid) {
+    resultBox.innerHTML = `
+      <div class="result-error">
+        <div class="result-error-title">กรุณากรอกเลขบัตรประชาชน</div>
+        <div class="result-error-sub">
+          ใส่เลขบัตรประชาชน 13 หลักของนักเรียน แล้วกดปุ่ม "ตรวจสอบผล" อีกครั้งค่ะ
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const student = students.find(s => s.cid === cid);
+
+  if (!student) {
+    resultBox.innerHTML = `
+      <div class="result-error">
+        <div class="result-error-title">❌ ไม่พบข้อมูลผู้เข้าสอบ</div>
+        <div class="result-error-sub">
+          • กรุณาตรวจสอบเลขบัตรประชาชนอีกครั้ง<br>
+          • หากแน่ใจว่าถูกต้องแล้ว ให้ติดต่อเจ้าหน้าที่โครงการเพื่อตรวจสอบสิทธิ์และผลการสอบ
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // ถ้ายังไม่ได้กรอก score ในข้อมูล students
+  if (typeof student.score !== "number" || isNaN(student.score)) {
+    resultBox.innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <div>
+            <div class="name-text">👤 ${student.name}</div>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div>
+            <div class="meta-item-label">ระดับชั้น</div>
+            <div class="meta-item-value">${student.level}</div>
+          </div>
+          <div>
+            <div class="meta-item-label">โรงเรียน</div>
+            <div class="meta-item-value">${student.school}</div>
+          </div>
+          <div>
+            <div class="meta-item-label">จังหวัด</div>
+            <div class="meta-item-value">${student.province}</div>
+          </div>
+        </div>
+
+        <div class="exam-info">
+          <div class="exam-row">
+            <span class="exam-label">สถานะผลสอบ:</span>
+            <span class="exam-value">ยังไม่บันทึกคะแนนในระบบ</span>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // มีคะแนนแล้ว → คำนวณสถิติภาพรวม
+  const stats = getScoreStats();
+  const score = student.score;
+  const award = getAwardLevel(score);
+  const get_award = getAward(score);
+
+  // path สำหรับไฟล์เกียรติบัตร (แพรสามารถเปลี่ยน path ได้ตามจริง)
+  const participationUrl = `.certIn/cert_in_${student.cid}.pdf`;
+  const awardUrl = award ? `.certAward/cert_a_${student.cid}.pdf` : null;
+
+  const meanText = stats ? stats.mean.toFixed(2) : "-";
+  const maxText = stats ? stats.max.toFixed(0) : "-";
+  const minText = stats ? stats.min.toFixed(0) : "-";
+
+  resultBox.innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <div>
+          <div class="name-text">👤 ${student.name}</div>
+          <div class="award-text">${get_award ? get_award.label : ""}</div>
+        </div>
+        <div class="seat-badge">
+          <span>คะแนนของคุณ</span> ${score} / 100
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div>
+          <div class="meta-item-label">เลขที่นั่งสอบ</div>
+          <div class="meta-item-value">${student.seat}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">ระดับชั้น</div>
+          <div class="meta-item-value">${student.level}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">โรงเรียน</div>
+          <div class="meta-item-value">${student.school}</div>
+        </div>
+        <div>
+          <div class="meta-item-label">จังหวัด</div>
+          <div class="meta-item-value">${student.province}</div>
+        </div>
+      </div>
+
+      <div class="exam-info" style="margin-top: 1.2rem;">
+        <div class="exam-row">
+          <span class="exam-label">คะแนนเฉลี่ยผู้เข้าสอบ:</span>
+          <span class="exam-value">${meanText}</span>
+        </div>
+        <div class="exam-row">
+          <span class="exam-label">คะแนนสูงสุด:</span>
+          <span class="exam-value">${maxText}</span>
+        </div>
+        <div class="exam-row">
+          <span class="exam-label">คะแนนต่ำสุด:</span>
+          <span class="exam-value">${minText}</span>
+        </div>
+      </div>
+
+      <div class="meta-tag-row">
+        <a class="meta-tag" href="${participationUrl}" target="_blank">
+          📄 เกียรติบัตรเข้าร่วม
+        </a>
+        ${
+          awardUrl
+            ? `<a class="meta-tag" href="${awardUrl}" target="_blank">
+                 🏅 ${award.label}
+               </a>`
+            : ""
+        }
+      </div>
+    </div>
+  `;
+
+  // วาดกราฟโค้งปกติ + ตำแหน่งคะแนน
+  if (stats) {
+    renderScoreChart(score, stats);
+    chartWrapper.style.display = "block";
+  } else {
+    chartWrapper.style.display = "none";
+  }
+}
+
+// ====== วาดกราฟโค้งปกติ + marker คะแนนเรา ======
+function renderScoreChart(userScore, stats) {
+  const canvas = document.getElementById("scoreChart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const marginLeft = 40;
+  const marginRight = 20;
+  const marginTop = 20;
+  const marginBottom = 30;
+
+  const mean = stats.mean;
+  const sd = stats.sd;
+
+  // ฟังก์ชัน pdf ของ normal
+  function normalPdf(x, m, s) {
+    const z = (x - m) / s;
+    return Math.exp(-0.5 * z * z) / (s * Math.sqrt(2 * Math.PI));
+  }
+
+  // หา max pdf เพื่อใช้ scale
+  const maxPdf = normalPdf(mean, mean, sd);
+
+  // แกน x (คะแนน 0–100)
+  ctx.strokeStyle = "#9ca3af";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(marginLeft, h - marginBottom);
+  ctx.lineTo(w - marginRight, h - marginBottom);
+  ctx.stroke();
+
+  // วาดโค้งปกติ
+  ctx.strokeStyle = "#1d4ed8";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let score = 0; score <= 100; score++) {
+    const x = marginLeft + ((w - marginLeft - marginRight) * score) / 100;
+    const pdf = normalPdf(score, mean, sd);
+    const yNorm = pdf / maxPdf;
+    const y = (h - marginBottom) - yNorm * (h - marginTop - marginBottom);
+
+    if (score === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // เส้นตำแหน่งคะแนนเรา
+  const userX = marginLeft + ((w - marginLeft - marginRight) * userScore) / 100;
+  ctx.strokeStyle = "#dc2626";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(userX, h - marginBottom);
+  ctx.lineTo(userX, marginTop + 10);
+  ctx.stroke();
+
+  // จุดบนโค้งที่คะแนนเรา
+  const pdfUser = normalPdf(userScore, mean, sd);
+  const yUserNorm = pdfUser / maxPdf;
+  const userY = (h - marginBottom) - yUserNorm * (h - marginTop - marginBottom);
+  ctx.fillStyle = "#dc2626";
+  ctx.beginPath();
+  ctx.arc(userX, userY, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  // label ขนาดเล็ก
+  ctx.fillStyle = "#374151";
+  ctx.font = "12px system-ui";
+  ctx.fillText("0", marginLeft - 5, h - marginBottom + 14);
+  ctx.fillText("100", w - marginRight - 20, h - marginBottom + 14);
+
+  ctx.fillStyle = "#1d4ed8";
+  ctx.fillText("โค้งปกติ (ประมาณจากคะแนนทั้งหมด)", marginLeft, marginTop + 12);
+
+  ctx.fillStyle = "#dc2626";
+  ctx.fillText(`คะแนนของคุณ: ${userScore}`, marginLeft, marginTop + 28);
+}
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const pdpaCheckbox = document.getElementById("pdpa-consent");
+    const resultBtn = document.getElementById("result-btn");
+
+    // เผื่อไว้: บังคับให้ปุ่มปิดตอนโหลดหน้า
+    resultBtn.disabled = true;
+
+    pdpaCheckbox.addEventListener("change", function () {
+      resultBtn.disabled = !pdpaCheckbox.checked;
+    });
+  });
+
+
 
 </script>
 
