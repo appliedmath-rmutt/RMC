@@ -546,6 +546,10 @@
     gap: 0.6rem;
   }
 
+  .rank-row {
+  width: 100%;
+}
+
   .exam-label {
     font-weight: 700;
     color: #0f172a;
@@ -1821,6 +1825,28 @@ function getScoreStats() {
   return { mean, max, min, sd };
 }
 
+// ====== ฟังก์ชันคำนวณลำดับคะแนน (rank) ======
+function getRankInfo(score) {
+  // ดึงเฉพาะคนที่มีคะแนนเป็นตัวเลข
+  const scored = students
+    .map(s => (typeof s.score === "number" ? s.score : null))
+    .filter(v => v !== null && !isNaN(v));
+
+  const total = scored.length;
+  if (total === 0) {
+    return { rank: null, total: 0 };
+  }
+
+  // หาคะแนนไม่ซ้ำ เรียงจากมากไปน้อย
+  const uniqueScores = [...new Set(scored)].sort((a, b) => b - a);
+
+  // คนที่ได้คะแนนเท่ากัน จะได้ลำดับเดียวกัน
+  const rank = uniqueScores.indexOf(score) + 1;
+
+  return { rank, total };
+}
+
+
 // ====== ฟังก์ชันกำหนดระดับรางวัลจากคะแนน ======
 function getAwardLevel(score) {
   if (score >= 80) return { key: "gold", label: "เกียรติบัตรระดับเหรียญทอง" };
@@ -1919,12 +1945,16 @@ function lookupResult() {
   const get_award = getAward(score);
 
   // path สำหรับไฟล์เกียรติบัตร (แพรสามารถเปลี่ยน path ได้ตามจริง)
-  const participationUrl = `./certIn/cert_in_${student.cid}.pdf`;
-  const awardUrl = award ? `./certAward/cert_a_${student.cid}.pdf` : null;
+  const participationUrl = `.certIn/cert_in_${student.cid}.pdf`;
+  const awardUrl = award ? `.certAward/cert_a_${student.cid}.pdf` : null;
 
   const meanText = stats ? stats.mean.toFixed(2) : "-";
   const maxText = stats ? stats.max.toFixed(0) : "-";
   const minText = stats ? stats.min.toFixed(0) : "-";
+
+  // 👉 คำนวณลำดับคะแนน
+  const rankInfo = getRankInfo(score);
+  
 
   resultBox.innerHTML = `
     <div class="result-card">
@@ -1955,9 +1985,14 @@ function lookupResult() {
           <div class="meta-item-label">จังหวัด</div>
           <div class="meta-item-value">${student.province}</div>
         </div>
+        
       </div>
 
       <div class="exam-info" style="margin-top: 1.2rem;">
+        <div class="exam-row">
+          <span class="exam-label">ลำดับคะแนน:</span>
+          <span class="exam-value">ลำดับที่ ${rankInfo.rank} จากผู้เข้าสอบ ${rankInfo.total-2} คน </span>
+        </div>
         <div class="exam-row">
           <span class="exam-label">คะแนนเฉลี่ยผู้เข้าสอบ:</span>
           <span class="exam-value">${meanText}</span>
