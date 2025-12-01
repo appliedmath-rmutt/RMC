@@ -1945,8 +1945,8 @@ function lookupResult() {
   const get_award = getAward(score);
 
   // path สำหรับไฟล์เกียรติบัตร (แพรสามารถเปลี่ยน path ได้ตามจริง)
-  const participationUrl = `.certIn/cert_in_${student.cid}.pdf`;
-  const awardUrl = award ? `.certAward/cert_a_${student.cid}.pdf` : null;
+  const participationUrl = `./certIn/cert_in_${student.cid}.pdf`;
+  const awardUrl = award ? `./certAward/cert_a_${student.cid}.pdf` : null;
 
   const meanText = stats ? stats.mean.toFixed(2) : "-";
   const maxText = stats ? stats.max.toFixed(0) : "-";
